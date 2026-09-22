@@ -1,0 +1,9 @@
+@import "./lista.component.css";
+
+.equipo {
+    background-color: #E8F5E9;
+}
+
+.titulo {
+    color: #1B5E20;
+}

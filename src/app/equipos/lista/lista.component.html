@@ -1,0 +1,51 @@
+<ActionBar class="action-bar">
+    <Label class="action-bar-title" text="MineControl - Equipos"></Label>
+</ActionBar>
+
+<ScrollView>
+    <StackLayout class="page">
+
+        <Image
+            src="res://minecontrol"
+            width="60"
+            height="60"
+            stretch="aspectFit">
+        </Image>
+        <Label
+            class="titulo"
+            text="Equipos de Planta">
+        </Label>
+
+        <Label
+            class="plataforma"
+            [text]="'Plataforma: ' + plataforma">
+        </Label>
+
+        <StackLayout
+            *ngFor="let equipo of equipos"
+            class="equipo"
+            (tap)="verDetalle(equipo)">
+
+            <Label
+                class="codigo"
+                [text]="equipo.codigo">
+            </Label>
+
+            <Label
+                class="nombre"
+                [text]="equipo.nombre">
+            </Label>
+
+            <Label
+                [text]="'Area: ' + equipo.area">
+            </Label>
+
+            <Label
+                class="estado"
+                [text]="'Estado: ' + equipo.estado">
+            </Label>
+
+        </StackLayout>
+    </StackLayout>
+</ScrollView>
+

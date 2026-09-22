@@ -1,0 +1,8 @@
+node_modules/
+platforms/
+hooks/
+package-lock.json
+.DS_Store
+*.log
+.vscode/
+.idea/

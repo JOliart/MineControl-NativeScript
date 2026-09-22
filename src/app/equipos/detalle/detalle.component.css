@@ -1,0 +1,25 @@
+.page {
+    padding: 20;
+}
+
+.titulo {
+    font-size: 26;
+    font-weight: bold;
+    margin-bottom: 20;
+}
+
+.codigo {
+    font-size: 16;
+    font-weight: bold;
+}
+
+.nombre {
+    font-size: 22;
+    font-weight: bold;
+    margin: 10 0;
+}
+
+.dato {
+    font-size: 16;
+    margin: 5 0;
+}
