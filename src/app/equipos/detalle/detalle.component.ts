@@ -1,6 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "nativescript-angular/router";
+import { alert, action } from "tns-core-modules/ui/dialogs";
+import { Toasty } from "nativescript-toast";
 
 import {
     Equipo,
@@ -44,10 +46,48 @@ export class DetalleComponent implements OnInit {
 
     public votoPositivo(observacion: Observacion): void {
         observacion.votosPositivos++;
+
+        alert({
+            title: "MineControl",
+            message: "Voto positivo registrado correctamente.",
+            okButtonText: "Aceptar"
+        });
     }
 
     public votoNegativo(observacion: Observacion): void {
         observacion.votosNegativos++;
+
+        alert({
+            title: "MineControl",
+            message: "Voto negativo registrado correctamente.",
+            okButtonText: "Aceptar"
+        });
+    }
+
+    public editarEstado(observacion: Observacion): void {
+
+        action({
+            message: "Seleccione el nuevo estado",
+            cancelButtonText: "Cancelar",
+            actions: [
+                "NORMAL",
+                "REVISAR",
+                "MANTENIMIENTO",
+                "CRITICO"
+            ]
+        }).then((resultado: string) => {
+
+            if (resultado && resultado !== "Cancelar") {
+
+                observacion.estado = resultado;
+
+                const toast = new Toasty({
+                    text: "Observacion actualizada correctamente"
+                });
+
+                toast.show();
+            }
+        });
     }
 
     public actualizar(args: any): void {

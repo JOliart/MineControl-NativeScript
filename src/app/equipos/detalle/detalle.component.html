@@ -65,7 +65,7 @@
                     row="0"
                     rowSpan="2"
                     col="2"
-                    columns="auto, auto"
+                    columns="auto, auto, auto"
                     class="votos">
 
                     <Button
@@ -81,6 +81,13 @@
                         (tap)="votoNegativo(observacion)"
                         class="btn-voto">
                     </Button>
+
+		    <Button
+			col="2"
+    			text="EDITAR"
+    			(tap)="editarEstado(observacion)"
+    			class="btn-editar">
+		    </Button>
 
                 </GridLayout>
 
