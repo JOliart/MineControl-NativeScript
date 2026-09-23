@@ -7,8 +7,10 @@
 
 <GridLayout rows="auto, auto, *" class="page">
 
+    <!-- Encabezado -->
     <StackLayout row="0">
 
+        <!-- Imagen desde App_Resources -->
         <Image
             src="res://minecontrol"
             width="60"
@@ -70,6 +72,45 @@
                 *ngFor="let equipo of resultadosBusqueda"
                 class="equipo"
                 (tap)="verDetalle(equipo)">
+
+                <!-- Imagen 1: App_Resources -->
+                <Image
+                    src="res://minecontrol"
+                    width="55"
+                    height="55"
+                    stretch="aspectFit">
+                </Image>
+
+                <Label
+                    text="Imagen desde App_Resources"
+                    class="origen-imagen">
+                </Label>
+
+                <!-- Imagen 2: URL publica -->
+                <Image
+                    src="https://raw.githubusercontent.com/NativeScript/NativeScript/master/apps/demo/assets/icon.png"
+                    width="55"
+                    height="55"
+                    stretch="aspectFit">
+                </Image>
+
+                <Label
+                    text="Imagen desde URL publica"
+                    class="origen-imagen">
+                </Label>
+
+                <!-- Imagen 3: path de la aplicacion -->
+                <Image
+                    src="~/images/minecontrol-local.png"
+                    width="55"
+                    height="55"
+                    stretch="aspectFit">
+                </Image>
+
+                <Label
+                    text="Imagen desde path ~/ de la aplicacion"
+                    class="origen-imagen">
+                </Label>
 
                 <Label
                     class="codigo"
