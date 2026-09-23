@@ -10,7 +10,7 @@
     <!-- Encabezado -->
     <StackLayout row="0">
 
-        <!-- Imagen desde App_Resources -->
+        <!-- Imagen cargada desde App_Resources -->
         <Image
             src="res://minecontrol"
             width="60"
@@ -30,6 +30,7 @@
 
     </StackLayout>
 
+
     <!-- Formulario de busqueda -->
     <GridLayout
         row="1"
@@ -40,6 +41,9 @@
             col="0"
             hint="Codigo, nombre, area o estado"
             [(ngModel)]="textoBusqueda"
+            name="busqueda"
+            minimoBusqueda
+            #campoBusqueda="ngModel"
             returnKeyType="search"
             (returnPress)="buscar()">
         </TextField>
@@ -58,83 +62,56 @@
 
     </GridLayout>
 
-    <ScrollView row="2">
 
-        <StackLayout>
+    <!-- Pull to Refresh -->
+    <PullToRefresh
+        row="2"
+        (refresh)="refrescar($event)">
 
-            <Label
-                *ngIf="resultadosBusqueda.length === 0"
-                text="No se encontraron equipos."
-                class="sin-resultados">
-            </Label>
+        <!-- ListView requerido por la practica -->
+        <ListView
+            [items]="resultadosBusqueda"
+            class="lista-equipos">
 
-            <StackLayout
-                *ngFor="let equipo of resultadosBusqueda"
-                class="equipo"
-                (tap)="verDetalle(equipo)">
+            <ng-template let-equipo="item">
 
-                <!-- Imagen 1: App_Resources -->
-                <Image
-                    src="res://minecontrol"
-                    width="55"
-                    height="55"
-                    stretch="aspectFit">
-                </Image>
+                <!-- Plantilla anidada basada en FlexboxLayout -->
+                <FlexboxLayout
+                    flexDirection="column"
+                    class="equipo"
+                    (tap)="verDetalle(equipo)"
+                    (longPress)="cambiarEstado(equipo)">
 
-                <Label
-                    text="Imagen desde App_Resources"
-                    class="origen-imagen">
-                </Label>
+                    <Label
+                        class="codigo"
+                        [text]="equipo.codigo">
+                    </Label>
 
-                <!-- Imagen 2: URL publica -->
-                <Image
-                    src="https://raw.githubusercontent.com/NativeScript/NativeScript/master/apps/demo/assets/icon.png"
-                    width="55"
-                    height="55"
-                    stretch="aspectFit">
-                </Image>
+                    <Label
+                        class="nombre"
+                        [text]="equipo.nombre">
+                    </Label>
 
-                <Label
-                    text="Imagen desde URL publica"
-                    class="origen-imagen">
-                </Label>
+                    <Label
+                        [text]="'Area: ' + equipo.area">
+                    </Label>
 
-                <!-- Imagen 3: path de la aplicacion -->
-                <Image
-                    src="~/images/minecontrol-local.png"
-                    width="55"
-                    height="55"
-                    stretch="aspectFit">
-                </Image>
+                    <Label
+                        class="estado"
+                        [text]="'Estado: ' + equipo.estado">
+                    </Label>
 
-                <Label
-                    text="Imagen desde path ~/ de la aplicacion"
-                    class="origen-imagen">
-                </Label>
+                    <Label
+                        class="ayuda"
+                        text="Tap: ver detalle | Mantener pulsado: cambiar estado">
+                    </Label>
 
-                <Label
-                    class="codigo"
-                    [text]="equipo.codigo">
-                </Label>
+                </FlexboxLayout>
 
-                <Label
-                    class="nombre"
-                    [text]="equipo.nombre">
-                </Label>
+            </ng-template>
 
-                <Label
-                    [text]="'Area: ' + equipo.area">
-                </Label>
+        </ListView>
 
-                <Label
-                    class="estado"
-                    [text]="'Estado: ' + equipo.estado">
-                </Label>
-
-            </StackLayout>
-
-        </StackLayout>
-
-    </ScrollView>
+    </PullToRefresh>
 
 </GridLayout>

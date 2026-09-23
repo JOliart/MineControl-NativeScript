@@ -1,4 +1,5 @@
 <ActionBar class="action-bar">
+
     <NavigationButton
         text="Atras"
         android.systemIcon="ic_menu_back"
@@ -9,189 +10,173 @@
         class="action-bar-title"
         text="Detalle del Equipo">
     </Label>
+
 </ActionBar>
 
-<PullToRefresh (refresh)="actualizar($event)">
+<ScrollView>
 
-    <ScrollView>
-        <StackLayout class="page">
+    <StackLayout class="page" *ngIf="equipo">
 
-            <!--
-                Referencia de vista utilizada por:
-                @ViewChild("panelAnimado")
-            -->
-            <StackLayout
-                #panelAnimado
-                padding="15"
-                margin="5"
-                backgroundColor="#FFFFFF">
+        <Label
+            class="titulo"
+            text="MineControl">
+        </Label>
 
-                <Label
-                    class="titulo"
-                    text="MineControl">
-                </Label>
+        <Label
+            class="codigo"
+            [text]="equipo.codigo">
+        </Label>
 
-                <StackLayout *ngIf="equipo">
+        <Label
+            class="nombre"
+            [text]="equipo.nombre">
+        </Label>
+
+        <Label
+            class="dato"
+            [text]="'Area: ' + equipo.area">
+        </Label>
+
+        <Label
+            class="dato"
+            [text]="'Estado: ' + equipo.estado">
+        </Label>
+
+
+        <!-- ========================================= -->
+        <!-- PRACTICA DE ANIMACIONES                   -->
+        <!-- ========================================= -->
+
+        <Label
+            class="subtitulo"
+            text="Animaciones">
+        </Label>
+
+        <!--
+            Requisito:
+            variable de vista #panelAnimado.
+
+            Este mismo boton es el elemento que se anima
+            mediante @ViewChild en detalle.component.ts.
+        -->
+        <Button
+            #panelAnimado
+            text="ANIMAR COLOR"
+            class="btn btn-primary"
+            backgroundColor="#FFFFFF"
+            (tap)="animarColor()">
+        </Button>
+
+        <!--
+            Segunda animacion:
+            scale + rotate.
+            Se anima el mismo boton referenciado por ViewChild.
+        -->
+        <Button
+            text="ANIMAR ESCALA Y ROTACION"
+            class="btn btn-primary"
+            (tap)="animarTransformacion()">
+        </Button>
+
+
+        <!-- ========================================= -->
+        <!-- OBSERVACIONES                             -->
+        <!-- ========================================= -->
+
+        <Label
+            class="subtitulo"
+            text="Observaciones">
+        </Label>
+
+        <ListView
+            [items]="equipo.observaciones"
+            height="350"
+            class="lista-observaciones">
+
+            <ng-template let-observacion="item">
+
+                <GridLayout
+                    columns="40, *, auto"
+                    rows="auto, auto, auto"
+                    class="observacion">
 
                     <Label
-                        class="codigo"
-                        [text]="equipo.codigo">
+                        row="0"
+                        col="0"
+                        rowSpan="2"
+                        [text]="observacion.icono"
+                        class="icono-observacion">
                     </Label>
 
                     <Label
-                        class="nombre"
-                        [text]="equipo.nombre">
+                        row="0"
+                        col="1"
+                        colSpan="2"
+                        [text]="observacion.descripcion"
+                        textWrap="true"
+                        class="texto-observacion">
                     </Label>
 
                     <Label
-                        class="dato"
-                        [text]="'Area: ' + equipo.area">
+                        row="1"
+                        col="1"
+                        [text]="'Usuario: ' + observacion.usuario">
                     </Label>
 
                     <Label
-                        class="dato"
-                        [text]="'Estado: ' + equipo.estado">
+                        row="1"
+                        col="2"
+                        [text]="'Estado: ' + observacion.estado"
+                        class="estado-observacion">
                     </Label>
 
-                </StackLayout>
+                    <Button
+                        row="2"
+                        col="0"
+                        [text]="'+' + observacion.votosPositivos"
+                        class="btn-voto"
+                        (tap)="votarPositivo(observacion)">
+                    </Button>
 
-            </StackLayout>
+                    <Button
+                        row="2"
+                        col="1"
+                        [text]="'-' + observacion.votosNegativos"
+                        class="btn-voto"
+                        (tap)="votarNegativo(observacion)">
+                    </Button>
 
+                    <Button
+                        row="2"
+                        col="2"
+                        text="EDITAR"
+                        class="btn-accion"
+                        (tap)="editarObservacion(observacion)">
+                    </Button>
 
-            <!-- PRACTICA DE ANIMACIONES -->
+                </GridLayout>
 
-            <Label
-                text="Animaciones"
-                fontSize="20"
-                fontWeight="bold"
-                marginTop="15"
-                marginBottom="10">
-            </Label>
+            </ng-template>
 
-            <!-- Requisito 3: color con delay -->
-            <Button
-                text="ANIMAR COLOR"
-                class="btn btn-primary"
-                (tap)="animarColor()">
-            </Button>
-
-            <!-- Requisito 4: scale + rotate -->
-            <Button
-                text="ANIMAR ESCALA Y ROTACION"
-                class="btn btn-primary"
-                (tap)="animarTransformacion()">
-            </Button>
-
-
-            <!-- LISTA AVANZADA -->
-
-            <StackLayout *ngIf="equipo">
-
-                <Label
-                    text="Observaciones"
-                    fontSize="20"
-                    fontWeight="bold"
-                    marginTop="20"
-                    marginBottom="10">
-                </Label>
-
-                <ListView
-                    [items]="equipo.observaciones"
-                    height="350">
-
-                    <ng-template let-observacion="item">
-
-                        <GridLayout
-                            columns="40, *, auto"
-                            rows="auto, auto, auto"
-                            padding="8"
-                            margin="3">
-
-                            <!-- Icono -->
-                            <Label
-                                row="0"
-                                col="0"
-                                rowSpan="2"
-                                [text]="observacion.icono"
-                                fontSize="22"
-                                verticalAlignment="middle">
-                            </Label>
-
-                            <!-- Descripcion -->
-                            <Label
-                                row="0"
-                                col="1"
-                                colSpan="2"
-                                [text]="observacion.descripcion"
-                                textWrap="true"
-                                fontSize="16">
-                            </Label>
-
-                            <!-- Usuario -->
-                            <Label
-                                row="1"
-                                col="1"
-                                [text]="'Usuario: ' + observacion.usuario"
-                                fontSize="12">
-                            </Label>
-
-                            <!-- Estado -->
-                            <Label
-                                row="1"
-                                col="2"
-                                [text]="observacion.estado"
-                                fontSize="12">
-                            </Label>
-
-                            <!-- Voto positivo -->
-                            <Button
-                                row="2"
-                                col="0"
-                                [text]="'👍 ' + observacion.votosPositivos"
-                                (tap)="votarPositivo(observacion)">
-                            </Button>
-
-                            <!-- Voto negativo -->
-                            <Button
-                                row="2"
-                                col="1"
-                                [text]="'👎 ' + observacion.votosNegativos"
-                                (tap)="votarNegativo(observacion)">
-                            </Button>
-
-                            <!-- Action dialog -->
-                            <Button
-                                row="2"
-                                col="2"
-                                text="EDITAR"
-                                (tap)="editarObservacion(observacion)">
-                            </Button>
-
-                        </GridLayout>
-
-                    </ng-template>
-
-                </ListView>
-
-            </StackLayout>
+        </ListView>
 
 
-            <!-- EDICION DEL EQUIPO -->
+        <!-- ========================================= -->
+        <!-- EDICION Y NAVEGACION                      -->
+        <!-- ========================================= -->
 
-            <Button
-                text="EDITAR EQUIPO"
-                class="btn btn-primary"
-                *ngIf="equipo"
-                (tap)="editar()">
-            </Button>
+        <Button
+            text="EDITAR EQUIPO"
+            class="btn btn-primary"
+            (tap)="editar()">
+        </Button>
 
-            <Button
-                text="VOLVER"
-                class="btn"
-                (tap)="volver()">
-            </Button>
+        <Button
+            text="VOLVER"
+            class="btn"
+            (tap)="volver()">
+        </Button>
 
-        </StackLayout>
-    </ScrollView>
+    </StackLayout>
 
-</PullToRefresh>
+</ScrollView>
