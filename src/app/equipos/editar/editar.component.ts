@@ -1,36 +1,12 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "nativescript-angular/router";
+import * as Toast from "nativescript-toast";
+
 import {
-    AbstractControl,
-    FormControl,
-    FormGroup,
-    ValidationErrors,
-    Validators
-} from "@angular/forms";
-import { alert } from "tns-core-modules/ui/dialogs";
-
-import { Equipo, EquiposService } from "../equipos.service";
-
-/*
- * Validador personalizado.
- * El nombre del equipo debe tener como minimo 5 caracteres.
- */
-export function nombreEquipoValido(
-    control: AbstractControl
-): ValidationErrors | null {
-
-    const valor = control.value ? control.value.trim() : "";
-
-    // El campo obligatorio se valida por separado con Validators.required.
-    if (valor && valor.length < 5) {
-        return {
-            nombreCorto: true
-        };
-    }
-
-    return null;
-}
+    Equipo,
+    EquiposService
+} from "../equipos.service";
 
 @Component({
     selector: "EquipoEditar",
@@ -40,77 +16,102 @@ export function nombreEquipoValido(
 })
 export class EditarComponent implements OnInit {
 
-    public equipo: Equipo;
-    public formulario: FormGroup;
-    public guardado = false;
+    public equipo: Equipo = null;
+    public cargando = false;
 
     constructor(
         private route: ActivatedRoute,
-        private equiposService: EquiposService,
-        private routerExtensions: RouterExtensions
+        private routerExtensions: RouterExtensions,
+        private equiposService: EquiposService
     ) {}
 
-    ngOnInit(): void {
+    public ngOnInit(): void {
 
-        const id = +this.route.snapshot.params["id"];
+        const id = Number(
+            this.route.snapshot.paramMap.get("id")
+        );
 
-        this.equipo = this.equiposService.getEquipo(id);
-
-        this.formulario = new FormGroup({
-
-            nombre: new FormControl(
-                this.equipo.nombre,
-                [
-                    Validators.required,
-                    nombreEquipoValido
-                ]
-            ),
-
-            area: new FormControl(
-                this.equipo.area,
-                [
-                    Validators.required
-                ]
-            )
-        });
+        this.cargarEquipo(id);
     }
 
+    /*
+     * Obtiene los equipos desde el WebService
+     * utilizando el Observable retornado por
+     * EquiposService.
+     */
+    private cargarEquipo(id: number): void {
+
+        this.cargando = true;
+
+        this.equiposService
+            .getEquipo(id)
+            .subscribe(
+                (equipos: Equipo[]) => {
+
+                    const encontrado = equipos.find(
+                        (item: Equipo) =>
+                            item.id === id
+                    );
+
+                    if (encontrado) {
+
+                        this.equipo = encontrado;
+
+                        if (!this.equipo.observaciones) {
+                            this.equipo.observaciones = [];
+                        }
+
+                    } else {
+
+                        Toast.makeText(
+                            "Equipo no encontrado"
+                        ).show();
+                    }
+
+                    this.cargando = false;
+                },
+                (error: any) => {
+
+                    console.log(
+                        "Error al obtener equipo para editar:"
+                    );
+
+                    console.log(error);
+
+                    this.cargando = false;
+
+                    Toast.makeText(
+                        "Error al consultar MineControl API"
+                    ).show();
+                }
+            );
+    }
+
+    /*
+     * Guarda los cambios localmente.
+     *
+     * La practica actual solicita consumir el listado
+     * mediante GET. Por eso no implementamos PUT/POST
+     * que no son requeridos por el WebService actual.
+     */
     public guardar(): void {
 
-        this.guardado = true;
-
-        if (this.formulario.invalid) {
-
-            alert({
-                title: "Validacion",
-                message: "Revise los campos del formulario.",
-                okButtonText: "Aceptar"
-            });
-
+        if (!this.equipo) {
             return;
         }
 
-        this.equipo.nombre = this.formulario.value.nombre.trim();
-        this.equipo.area = this.formulario.value.area.trim();
+        Toast.makeText(
+            "Cambios guardados en la aplicacion"
+        ).show();
 
-        alert({
-            title: "MineControl",
-            message: "Datos del equipo actualizados correctamente.",
-            okButtonText: "Aceptar"
-        }).then(() => {
-            this.routerExtensions.back();
-        });
+        this.routerExtensions.back();
     }
 
     public cancelar(): void {
         this.routerExtensions.back();
     }
 
-    public get nombre(): FormControl {
-        return this.formulario.get("nombre") as FormControl;
-    }
-
-    public get area(): FormControl {
-        return this.formulario.get("area") as FormControl;
+    public volver(): void {
+        this.routerExtensions.back();
     }
 }

@@ -1,4 +1,6 @@
 import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
 
 export interface Observacion {
     id: number;
@@ -16,7 +18,7 @@ export interface Equipo {
     nombre: string;
     area: string;
     estado: string;
-    observaciones: Observacion[];
+    observaciones?: Observacion[];
 }
 
 @Injectable({
@@ -24,95 +26,55 @@ export interface Equipo {
 })
 export class EquiposService {
 
-    private equipos: Equipo[] = [
-        {
-            id: 1,
-            codigo: "TR-001",
-            nombre: "Transformador 5 MVA",
-            area: "Subestacion",
-            estado: "OPERATIVO",
-            observaciones: [
-                {
-                    id: 1,
-                    descripcion: "Temperatura dentro del rango normal",
-                    usuario: "Operaciones",
-                    estado: "NORMAL",
-                    icono: "⚡",
-                    votosPositivos: 3,
-                    votosNegativos: 0
-                },
-                {
-                    id: 2,
-                    descripcion: "Inspeccion preventiva realizada",
-                    usuario: "Mantenimiento",
-                    estado: "OK",
-                    icono: "🔧",
-                    votosPositivos: 5,
-                    votosNegativos: 0
-                }
-            ]
-        },
-        {
-            id: 2,
-            codigo: "GE-001",
-            nombre: "Generador CAT 800 kW",
-            area: "Planta Termica",
-            estado: "OPERATIVO",
-            observaciones: [
-                {
-                    id: 1,
-                    descripcion: "Nivel de combustible verificado",
-                    usuario: "Operaciones",
-                    estado: "OK",
-                    icono: "⚡",
-                    votosPositivos: 2,
-                    votosNegativos: 0
-                }
-            ]
-        },
-        {
-            id: 3,
-            codigo: "BM-001",
-            nombre: "Bomba de Proceso",
-            area: "Bombeo",
-            estado: "MANTENIMIENTO",
-            observaciones: [
-                {
-                    id: 1,
-                    descripcion: "Revision de rodamientos pendiente",
-                    usuario: "Mantenimiento",
-                    estado: "REVISAR",
-                    icono: "🔧",
-                    votosPositivos: 1,
-                    votosNegativos: 1
-                }
-            ]
-        },
-        {
-            id: 4,
-            codigo: "UPS-001",
-            nombre: "UPS Sala Electrica",
-            area: "Control",
-            estado: "ALARMA",
-            observaciones: [
-                {
-                    id: 1,
-                    descripcion: "Autonomia de bateria reducida",
-                    usuario: "Electricidad",
-                    estado: "ALARMA",
-                    icono: "⚠",
-                    votosPositivos: 0,
-                    votosNegativos: 3
-                }
-            ]
-        }
-    ];
+    /*
+     * API publica creada con Express y expuesta mediante ngrok.
+     *
+     * Mientras ngrok este ejecutandose esta URL permitira
+     * acceder al servidor Express que corre en el puerto 3000.
+     */
+    private apiUrl =
+        "https://washout-unleash-feast.ngrok-free.dev/equipos";
 
-    public getEquipos(): Equipo[] {
-        return this.equipos;
+    constructor(
+        private http: HttpClient
+    ) {}
+
+    /*
+     * Obtiene el listado de equipos desde el WebService.
+     *
+     * Devuelve un Observable para que el componente
+     * pueda responder asincronicamente.
+     */
+    public getEquipos(filtro?: string): Observable<Equipo[]> {
+
+        let url = this.apiUrl;
+
+        /*
+         * Si se proporciona un filtro se envia mediante
+         * querystring al WebService Express.
+         *
+         * Ejemplo:
+         * /equipos?buscar=bomba
+         */
+        if (filtro && filtro.trim()) {
+            url += "?buscar=" +
+                encodeURIComponent(filtro.trim());
+        }
+
+        return this.http.get<Equipo[]>(url);
     }
 
-    public getEquipo(id: number): Equipo {
-        return this.equipos.find(equipo => equipo.id === id);
+    /*
+     * Obtiene un equipo utilizando el listado recibido
+     * desde el WebService.
+     *
+     * Esta funcion se adaptara posteriormente si es
+     * necesario para la pantalla de detalle.
+     */
+    public getEquipo(id: number): Observable<Equipo[]> {
+
+        return this.http.get<Equipo[]>(
+            this.apiUrl
+        );
     }
 }

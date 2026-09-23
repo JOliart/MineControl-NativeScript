@@ -18,63 +18,131 @@ export class ListaComponent implements OnInit {
     public resultadosBusqueda: Equipo[] = [];
     public textoBusqueda = "";
     public plataforma = "iOS";
-
-    private contadorRefresco = 1;
+    public cargando = false;
 
     constructor(
         private equiposService: EquiposService,
         private routerExtensions: RouterExtensions
     ) {}
 
-    ngOnInit(): void {
-
-        this.equipos = this.equiposService.getEquipos();
-
-        // Copia inicial para mostrar todos los equipos.
-        this.resultadosBusqueda = this.equipos.slice();
+    public ngOnInit(): void {
 
         // Codigo especifico para Android.
         if (isAndroid) {
             this.plataforma = "Android";
         }
+
+        /*
+         * Carga inicial asincronica desde el WebService.
+         */
+        this.cargarEquipos();
     }
 
+    /*
+     * Consume el WebService mediante un Observable.
+     *
+     * El servicio retorna Observable<Equipo[]> y subscribe()
+     * recibe la respuesta asincronicamente.
+     */
+    public cargarEquipos(filtro?: string): void {
+
+        this.cargando = true;
+
+        this.equiposService
+            .getEquipos(filtro)
+            .subscribe(
+                (datos: Equipo[]) => {
+
+                    /*
+                     * Variable de estado local.
+                     * Al actualizar este arreglo, el ListView
+                     * se actualiza reactivamente.
+                     */
+                    this.equipos = datos;
+                    this.resultadosBusqueda = datos.slice();
+
+                    this.cargando = false;
+                },
+                (error: any) => {
+
+                    console.log(
+                        "Error al consultar MineControl API:"
+                    );
+
+                    console.log(error);
+
+                    this.cargando = false;
+
+                    Toast.makeText(
+                        "No se pudo conectar con MineControl API"
+                    ).show();
+                }
+            );
+    }
+
+    /*
+     * Busqueda mediante querystring.
+     *
+     * Ejemplo:
+     * /equipos?buscar=bomba
+     */
     public buscar(): void {
 
-        const texto = this.textoBusqueda
-            .trim()
-            .toLowerCase();
+        const texto = this.textoBusqueda.trim();
 
-        // Si el buscador esta vacio mostramos todos los equipos.
         if (!texto) {
-            this.resultadosBusqueda = this.equipos.slice();
+
+            this.cargarEquipos();
+
             return;
         }
 
-        // Filtrado por codigo, nombre, area o estado.
-        this.resultadosBusqueda = this.equipos.filter(
-            (equipo: Equipo) =>
-                equipo.codigo.toLowerCase().indexOf(texto) !== -1 ||
-                equipo.nombre.toLowerCase().indexOf(texto) !== -1 ||
-                equipo.area.toLowerCase().indexOf(texto) !== -1 ||
-                equipo.estado.toLowerCase().indexOf(texto) !== -1
-        );
+        this.equiposService
+            .getEquipos(texto)
+            .subscribe(
+                (datos: Equipo[]) => {
 
-        Toast.makeText("Busqueda realizada").show();
+                    this.equipos = datos;
+                    this.resultadosBusqueda = datos.slice();
+
+                    Toast.makeText(
+                        "Resultados recibidos del WebService"
+                    ).show();
+                },
+                (error: any) => {
+
+                    console.log(
+                        "Error en la busqueda:"
+                    );
+
+                    console.log(error);
+
+                    Toast.makeText(
+                        "Error al realizar la busqueda"
+                    ).show();
+                }
+            );
     }
 
     public limpiarBusqueda(): void {
 
         this.textoBusqueda = "";
 
-        this.resultadosBusqueda = this.equipos.slice();
+        /*
+         * Vuelve a consultar todos los equipos
+         * desde Express.
+         */
+        this.cargarEquipos();
 
-        Toast.makeText("Busqueda limpiada").show();
+        Toast.makeText(
+            "Busqueda limpiada"
+        ).show();
     }
 
     /*
      * Dialogo Action.
-     * Permite modificar el estado del objeto seleccionado.
+     * Modifica el estado del objeto seleccionado
+     * dentro de la aplicacion.
      */
     public cambiarEstado(equipo: Equipo): void {
 
@@ -86,17 +154,24 @@ export class ListaComponent implements OnInit {
 
         action({
             title: "Estado del equipo",
-            message: "Seleccione el nuevo estado de " + equipo.codigo,
+            message:
+                "Seleccione el nuevo estado de " +
+                equipo.codigo,
             cancelButtonText: "Cancelar",
             actions: opciones
         }).then((resultado: string) => {
 
-            if (resultado && resultado !== "Cancelar") {
+            if (
+                resultado &&
+                resultado !== "Cancelar"
+            ) {
 
                 equipo.estado = resultado;
 
                 Toast.makeText(
-                    equipo.codigo + ": " + resultado
+                    equipo.codigo +
+                    ": " +
+                    resultado
                 ).show();
             }
         });
@@ -105,81 +180,65 @@ export class ListaComponent implements OnInit {
     /*
      * Pull To Refresh.
      *
-     * Cada vez que el usuario desliza hacia abajo:
-     * 1. Se obtiene nuevamente la informacion del servicio.
-     * 2. Se genera un nuevo equipo.
-     * 3. El nuevo equipo se agrega al inicio del ListView.
-     * 4. Se muestra un Toast.
+     * Ahora el refresco obtiene nuevamente
+     * los datos desde el WebService.
      */
     public refrescar(args: any): void {
 
         const pullRefresh = args.object;
 
-        setTimeout(() => {
+        this.equiposService
+            .getEquipos()
+            .subscribe(
+                (datos: Equipo[]) => {
 
-            const equiposServicio = this.equiposService.getEquipos();
+                    /*
+                     * Actualiza el arreglo local con
+                     * la respuesta HTTP.
+                     */
+                    this.equipos = datos;
+                    this.resultadosBusqueda =
+                        datos.slice();
 
-            /*
-             * Se toma un equipo existente como plantilla.
-             * De esta forma se conservan todas las propiedades
-             * definidas en la interfaz Equipo.
-             */
-            const indiceAleatorio = Math.floor(
-                Math.random() * equiposServicio.length
-            );
+                    this.textoBusqueda = "";
 
-            const equipoBase = equiposServicio[indiceAleatorio];
+                    if (pullRefresh) {
+                        pullRefresh.refreshing = false;
+                    }
 
-            const numeroAleatorio = Math.floor(
-                Math.random() * 900 + 100
-            );
+                    Toast.makeText(
+                        "Datos actualizados desde el API"
+                    ).show();
+                },
+                (error: any) => {
 
-            const nuevoEquipo = Object.assign(
-                {},
-                equipoBase,
-                {
-                    id: new Date().getTime(),
-                    codigo: "MC-" + numeroAleatorio,
-                    nombre: "Equipo actualizado " + this.contadorRefresco,
-                    estado: "OPERATIVO"
+                    console.log(
+                        "Error al actualizar:"
+                    );
+
+                    console.log(error);
+
+                    if (pullRefresh) {
+                        pullRefresh.refreshing = false;
+                    }
+
+                    Toast.makeText(
+                        "Error al actualizar datos"
+                    ).show();
                 }
-            ) as Equipo;
-
-            this.contadorRefresco++;
-
-            /*
-             * Se agrega realmente un elemento nuevo
-             * al arreglo utilizado por el ListView.
-             */
-            this.equipos = [
-                nuevoEquipo
-            ].concat(this.equipos);
-
-            this.resultadosBusqueda = this.equipos.slice();
-
-            // Limpia el formulario de busqueda.
-            this.textoBusqueda = "";
-
-            // Finaliza la animacion del PullToRefresh.
-            if (pullRefresh) {
-                pullRefresh.refreshing = false;
-            }
-
-            Toast.makeText(
-                "Nuevo equipo agregado: " + nuevoEquipo.codigo
-            ).show();
-
-        }, 700);
+            );
     }
 
     /*
-     * Navegacion programatica hacia el detalle.
-     * Requisito RouterExtensions.navigate().
+     * Navegacion programatica al detalle.
      */
     public verDetalle(equipo: Equipo): void {
 
         this.routerExtensions.navigate(
-            ["/equipos/detalle", equipo.id],
+            [
+                "/equipos/detalle",
+                equipo.id
+            ],
             {
                 transition: {
                     name: "fade"

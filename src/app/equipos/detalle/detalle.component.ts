@@ -7,9 +7,9 @@ import {
 
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "nativescript-angular/router";
-import { alert, action } from "tns-core-modules/ui/dialogs";
+import { action, alert } from "tns-core-modules/ui/dialogs";
 import { Color } from "tns-core-modules/color";
-import { makeText } from "nativescript-toast";
+import * as Toast from "nativescript-toast";
 
 import {
     Equipo,
@@ -25,55 +25,122 @@ import {
 })
 export class DetalleComponent implements OnInit {
 
-    public equipo: Equipo;
+    public equipo: Equipo = null;
 
-    // Practica de animaciones:
-    // referencia al control #panelAnimado de la vista.
-    @ViewChild("panelAnimado", { static: false })
+    @ViewChild(
+        "panelAnimado",
+        { static: false }
+    )
     public panelAnimado: ElementRef;
 
     constructor(
         private route: ActivatedRoute,
-        private equiposService: EquiposService,
-        private routerExtensions: RouterExtensions
+        private routerExtensions: RouterExtensions,
+        private equiposService: EquiposService
     ) {}
 
-    ngOnInit(): void {
-        const id = +this.route.snapshot.params["id"];
-        this.equipo = this.equiposService.getEquipo(id);
+    public ngOnInit(): void {
+
+        const id = Number(
+            this.route.snapshot.paramMap.get("id")
+        );
+
+        /*
+         * El servicio obtiene los equipos mediante HTTP.
+         * La respuesta es asincronica, por eso utilizamos
+         * subscribe().
+         */
+        this.equiposService
+            .getEquipo(id)
+            .subscribe(
+                (equipos: Equipo[]) => {
+
+                    const encontrado = equipos.find(
+                        (item: Equipo) =>
+                            item.id === id
+                    );
+
+                    if (encontrado) {
+
+                        this.equipo = encontrado;
+
+                        /*
+                         * El WebService de Express actualmente
+                         * no devuelve observaciones.
+                         * Creamos el arreglo para conservar
+                         * las funciones de la practica anterior.
+                         */
+                        if (!this.equipo.observaciones) {
+                            this.equipo.observaciones = [];
+                        }
+
+                    } else {
+
+                        Toast.makeText(
+                            "Equipo no encontrado"
+                        ).show();
+                    }
+                },
+                (error: any) => {
+
+                    console.log(
+                        "Error al obtener detalle del equipo:"
+                    );
+
+                    console.log(error);
+
+                    Toast.makeText(
+                        "Error al consultar el equipo"
+                    ).show();
+                }
+            );
     }
 
-    public votarPositivo(observacion: Observacion): void {
+    /*
+     * Voto positivo de una observacion.
+     */
+    public votarPositivo(
+        observacion: Observacion
+    ): void {
 
         observacion.votosPositivos++;
 
-        alert({
-            title: "MineControl",
-            message: "Se registro un voto positivo.",
-            okButtonText: "Aceptar"
-        });
+        Toast.makeText(
+            "Voto positivo registrado"
+        ).show();
     }
 
-    public votarNegativo(observacion: Observacion): void {
+    /*
+     * Voto negativo de una observacion.
+     */
+    public votarNegativo(
+        observacion: Observacion
+    ): void {
 
         observacion.votosNegativos++;
 
-        alert({
-            title: "MineControl",
-            message: "Se registro un voto negativo.",
-            okButtonText: "Aceptar"
-        });
+        Toast.makeText(
+            "Voto negativo registrado"
+        ).show();
     }
 
-    public editarObservacion(observacion: Observacion): void {
+    /*
+     * Dialogo Action para modificar el estado
+     * de una observacion.
+     */
+    public editarObservacion(
+        observacion: Observacion
+    ): void {
 
         action({
-            message: "Seleccione el nuevo estado",
+            title: "Estado de observacion",
+            message:
+                "Seleccione el nuevo estado",
             cancelButtonText: "Cancelar",
             actions: [
                 "PENDIENTE",
-                "REVISADO",
-                "ATENDIDO"
+                "EN PROCESO",
+                "ATENDIDA"
             ]
         }).then((resultado: string) => {
 
@@ -81,92 +148,128 @@ export class DetalleComponent implements OnInit {
                 resultado &&
                 resultado !== "Cancelar"
             ) {
+
                 observacion.estado = resultado;
 
-                makeText(
-                    "Observacion actualizada correctamente"
+                Toast.makeText(
+                    "Observacion actualizada: " +
+                    resultado
                 ).show();
             }
         });
     }
 
-    public actualizar(args: any): void {
+    /*
+     * Funcion utilizada por las practicas anteriores.
+     * Agrega una observacion local al equipo.
+     */
+    public agregarObservacion(): void {
 
-        const pullRefresh = args.object;
-
-        if (this.equipo && this.equipo.observaciones) {
-
-            const numero =
-                this.equipo.observaciones.length + 1;
-
-            this.equipo.observaciones.push({
-                id: numero,
-                descripcion: "Nueva observacion " + numero,
-                usuario: "Sistema",
-                estado: "PENDIENTE",
-                icono: "&#xf075;",
-                votosPositivos: 0,
-                votosNegativos: 0
-            });
-        }
-
-        if (pullRefresh) {
-            pullRefresh.refreshing = false;
-        }
-    }
-
-    public editar(): void {
-
-        this.routerExtensions.navigate(
-            ["/equipos/editar", this.equipo.id],
-            {
-                transition: {
-                    name: "slide"
-                }
-            }
-        );
-    }
-
-    // Requisito 3:
-    // animacion de color con delay.
-    public animarColor(): void {
-
-        if (!this.panelAnimado) {
+        if (!this.equipo) {
             return;
         }
 
-        const vista = this.panelAnimado.nativeElement;
+        if (!this.equipo.observaciones) {
+            this.equipo.observaciones = [];
+        }
+
+        const numero =
+            this.equipo.observaciones.length + 1;
+
+        const nuevaObservacion: Observacion = {
+            id: new Date().getTime(),
+            descripcion:
+                "Observacion generada " + numero,
+            usuario: "MineControl",
+            estado: "PENDIENTE",
+            icono: "!",
+            votosPositivos: 0,
+            votosNegativos: 0
+        };
+
+        this.equipo.observaciones.push(
+            nuevaObservacion
+        );
+
+        Toast.makeText(
+            "Nueva observacion agregada"
+        ).show();
+    }
+
+    /*
+     * Mantiene la funcion de edicion utilizada
+     * por la pantalla de detalle.
+     */
+    public editar(): void {
+
+        if (!this.equipo) {
+            return;
+        }
+
+        alert({
+            title: "MineControl",
+            message:
+                "Equipo seleccionado: " +
+                this.equipo.codigo +
+                "\nEstado: " +
+                this.equipo.estado,
+            okButtonText: "Aceptar"
+        });
+    }
+
+    /*
+     * Animacion de color con retardo.
+     */
+    public animarColor(): void {
+
+        if (
+            !this.panelAnimado ||
+            !this.panelAnimado.nativeElement
+        ) {
+            return;
+        }
+
+        const vista =
+            this.panelAnimado.nativeElement;
 
         vista.animate({
-            backgroundColor: new Color("#4CAF50"),
+            backgroundColor:
+                new Color("#4CAF50"),
             duration: 1000,
             delay: 500
         }).then(() => {
 
             return vista.animate({
-                backgroundColor: new Color("#FFFFFF"),
-                duration: 1000
+                backgroundColor:
+                    new Color("#FFFFFF"),
+                duration: 500
             });
         });
     }
 
-    // Requisito 4:
-    // segunda animacion usando scale y rotate.
+    /*
+     * Segunda animacion:
+     * escala y rotacion.
+     */
     public animarTransformacion(): void {
 
-        if (!this.panelAnimado) {
+        if (
+            !this.panelAnimado ||
+            !this.panelAnimado.nativeElement
+        ) {
             return;
         }
 
-        const vista = this.panelAnimado.nativeElement;
+        const vista =
+            this.panelAnimado.nativeElement;
 
         vista.animate({
             scale: {
-                x: 1.15,
-                y: 1.15
+                x: 1.2,
+                y: 1.2
             },
             rotate: 360,
-            duration: 1200
+            duration: 1000
         }).then(() => {
 
             return vista.animate({
@@ -175,7 +278,7 @@ export class DetalleComponent implements OnInit {
                     y: 1
                 },
                 rotate: 0,
-                duration: 500
+                duration: 400
             });
         });
     }
