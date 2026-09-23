@@ -12,7 +12,9 @@ import { Equipo, EquiposService } from "../equipos.service";
 })
 export class ListaComponent implements OnInit {
 
-    public equipos: Equipo[];
+    public equipos: Equipo[] = [];
+    public resultadosBusqueda: Equipo[] = [];
+    public textoBusqueda = "";
     public plataforma = "iOS";
 
     constructor(
@@ -23,10 +25,38 @@ export class ListaComponent implements OnInit {
     ngOnInit(): void {
         this.equipos = this.equiposService.getEquipos();
 
-        // Requisito: asignacion de variable solo cuando se ejecuta en Android.
+        // Array que almacena los resultados de busqueda.
+        this.resultadosBusqueda = this.equipos.slice();
+
+        // Codigo especifico para Android.
         if (isAndroid) {
             this.plataforma = "Android";
         }
+    }
+
+    public buscar(): void {
+
+        const texto = this.textoBusqueda
+            .trim()
+            .toLowerCase();
+
+        if (!texto) {
+            this.resultadosBusqueda = this.equipos.slice();
+            return;
+        }
+
+        this.resultadosBusqueda = this.equipos.filter(
+            (equipo: Equipo) =>
+                equipo.codigo.toLowerCase().indexOf(texto) !== -1 ||
+                equipo.nombre.toLowerCase().indexOf(texto) !== -1 ||
+                equipo.area.toLowerCase().indexOf(texto) !== -1 ||
+                equipo.estado.toLowerCase().indexOf(texto) !== -1
+        );
+    }
+
+    public limpiarBusqueda(): void {
+        this.textoBusqueda = "";
+        this.resultadosBusqueda = this.equipos.slice();
     }
 
     public verDetalle(equipo: Equipo): void {

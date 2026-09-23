@@ -1,9 +1,13 @@
 <ActionBar class="action-bar">
-    <Label class="action-bar-title" text="MineControl - Equipos"></Label>
+    <Label
+        class="action-bar-title"
+        text="MineControl - Equipos">
+    </Label>
 </ActionBar>
 
-<ScrollView>
-    <StackLayout class="page">
+<GridLayout rows="auto, auto, *" class="page">
+
+    <StackLayout row="0">
 
         <Image
             src="res://minecontrol"
@@ -11,6 +15,7 @@
             height="60"
             stretch="aspectFit">
         </Image>
+
         <Label
             class="titulo"
             text="Equipos de Planta">
@@ -21,31 +26,74 @@
             [text]="'Plataforma: ' + plataforma">
         </Label>
 
-        <StackLayout
-            *ngFor="let equipo of equipos"
-            class="equipo"
-            (tap)="verDetalle(equipo)">
+    </StackLayout>
+
+    <!-- Formulario de busqueda -->
+    <GridLayout
+        row="1"
+        columns="*, auto, auto"
+        class="buscador">
+
+        <TextField
+            col="0"
+            hint="Codigo, nombre, area o estado"
+            [(ngModel)]="textoBusqueda"
+            returnKeyType="search"
+            (returnPress)="buscar()">
+        </TextField>
+
+        <Button
+            col="1"
+            text="BUSCAR"
+            (tap)="buscar()">
+        </Button>
+
+        <Button
+            col="2"
+            text="X"
+            (tap)="limpiarBusqueda()">
+        </Button>
+
+    </GridLayout>
+
+    <ScrollView row="2">
+
+        <StackLayout>
 
             <Label
-                class="codigo"
-                [text]="equipo.codigo">
+                *ngIf="resultadosBusqueda.length === 0"
+                text="No se encontraron equipos."
+                class="sin-resultados">
             </Label>
 
-            <Label
-                class="nombre"
-                [text]="equipo.nombre">
-            </Label>
+            <StackLayout
+                *ngFor="let equipo of resultadosBusqueda"
+                class="equipo"
+                (tap)="verDetalle(equipo)">
 
-            <Label
-                [text]="'Area: ' + equipo.area">
-            </Label>
+                <Label
+                    class="codigo"
+                    [text]="equipo.codigo">
+                </Label>
 
-            <Label
-                class="estado"
-                [text]="'Estado: ' + equipo.estado">
-            </Label>
+                <Label
+                    class="nombre"
+                    [text]="equipo.nombre">
+                </Label>
+
+                <Label
+                    [text]="'Area: ' + equipo.area">
+                </Label>
+
+                <Label
+                    class="estado"
+                    [text]="'Estado: ' + equipo.estado">
+                </Label>
+
+            </StackLayout>
 
         </StackLayout>
-    </StackLayout>
-</ScrollView>
 
+    </ScrollView>
+
+</GridLayout>

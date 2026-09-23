@@ -2,7 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "nativescript-angular/router";
 import { alert, action } from "tns-core-modules/ui/dialogs";
-import { Toasty } from "nativescript-toast";
+import { makeText } from "nativescript-toast";
 
 import {
     Equipo,
@@ -80,12 +80,7 @@ export class DetalleComponent implements OnInit {
             if (resultado && resultado !== "Cancelar") {
 
                 observacion.estado = resultado;
-
-                const toast = new Toasty({
-                    text: "Observacion actualizada correctamente"
-                });
-
-                toast.show();
+                makeText("Observacion actualizada correctamente").show();
             }
         });
     }
@@ -113,3 +108,4 @@ export class DetalleComponent implements OnInit {
         }
     }
 }
+
