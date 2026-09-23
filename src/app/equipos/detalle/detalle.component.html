@@ -1,5 +1,4 @@
 <ActionBar class="action-bar">
-
     <NavigationButton
         text="Atras"
         android.systemIcon="ic_menu_back"
@@ -10,127 +9,189 @@
         class="action-bar-title"
         text="Detalle del Equipo">
     </Label>
-
 </ActionBar>
 
-<ScrollView>
+<PullToRefresh (refresh)="actualizar($event)">
 
-    <StackLayout
-        class="page"
-        *ngIf="equipo">
+    <ScrollView>
+        <StackLayout class="page">
 
-        <Label
-            class="titulo"
-            text="MineControl">
-        </Label>
+            <!--
+                Referencia de vista utilizada por:
+                @ViewChild("panelAnimado")
+            -->
+            <StackLayout
+                #panelAnimado
+                padding="15"
+                margin="5"
+                backgroundColor="#FFFFFF">
 
-        <Label
-            class="codigo"
-            [text]="equipo.codigo">
-        </Label>
+                <Label
+                    class="titulo"
+                    text="MineControl">
+                </Label>
 
-        <Label
-            class="nombre"
-            [text]="equipo.nombre">
-        </Label>
-
-        <Label
-            class="dato"
-            [text]="'Area: ' + equipo.area">
-        </Label>
-
-        <Label
-            class="dato"
-            [text]="'Estado: ' + equipo.estado">
-        </Label>
-
-        <!-- Listado avanzado de observaciones -->
-        <Label
-            class="subtitulo"
-            text="Observaciones">
-        </Label>
-
-        <ListView
-            [items]="equipo.observaciones"
-            class="lista-observaciones">
-
-            <ng-template
-                let-observacion="item"
-                let-i="index">
-
-                <GridLayout
-                    columns="auto, *, auto"
-                    rows="auto, auto"
-                    class="observacion">
+                <StackLayout *ngIf="equipo">
 
                     <Label
-                        col="0"
-                        row="0"
-                        rowSpan="2"
-                        class="icono-observacion"
-                        text="&#xf075;">
+                        class="codigo"
+                        [text]="equipo.codigo">
                     </Label>
 
                     <Label
-                        col="1"
-                        row="0"
-                        class="texto-observacion"
-                        [text]="observacion.texto"
-                        textWrap="true">
+                        class="nombre"
+                        [text]="equipo.nombre">
                     </Label>
 
                     <Label
-                        col="1"
-                        row="1"
-                        class="estado-observacion"
-                        [text]="'Estado: ' + observacion.estado">
+                        class="dato"
+                        [text]="'Area: ' + equipo.area">
                     </Label>
 
-                    <StackLayout
-                        col="2"
-                        row="0"
-                        rowSpan="2"
-                        orientation="horizontal">
+                    <Label
+                        class="dato"
+                        [text]="'Estado: ' + equipo.estado">
+                    </Label>
 
-                        <Button
-                            text="+"
-                            class="btn-voto"
-                            (tap)="votarPositivo(observacion)">
-                        </Button>
+                </StackLayout>
 
-                        <Button
-                            text="-"
-                            class="btn-voto"
-                            (tap)="votarNegativo(observacion)">
-                        </Button>
+            </StackLayout>
 
-                        <Button
-                            text="EDITAR"
-                            class="btn-accion"
-                            (tap)="editarObservacion(observacion)">
-                        </Button>
 
-                    </StackLayout>
+            <!-- PRACTICA DE ANIMACIONES -->
 
-                </GridLayout>
+            <Label
+                text="Animaciones"
+                fontSize="20"
+                fontWeight="bold"
+                marginTop="15"
+                marginBottom="10">
+            </Label>
 
-            </ng-template>
+            <!-- Requisito 3: color con delay -->
+            <Button
+                text="ANIMAR COLOR"
+                class="btn btn-primary"
+                (tap)="animarColor()">
+            </Button>
 
-        </ListView>
+            <!-- Requisito 4: scale + rotate -->
+            <Button
+                text="ANIMAR ESCALA Y ROTACION"
+                class="btn btn-primary"
+                (tap)="animarTransformacion()">
+            </Button>
 
-        <!-- Nuevo componente de edicion de datos -->
-        <Button
-            text="EDITAR EQUIPO"
-            class="btn btn-primary"
-            (tap)="editar()">
-        </Button>
 
-        <Button
-            text="VOLVER"
-            class="btn"
-            (tap)="volver()">
-        </Button>
+            <!-- LISTA AVANZADA -->
 
-    </StackLayout>
+            <StackLayout *ngIf="equipo">
 
-</ScrollView>
+                <Label
+                    text="Observaciones"
+                    fontSize="20"
+                    fontWeight="bold"
+                    marginTop="20"
+                    marginBottom="10">
+                </Label>
+
+                <ListView
+                    [items]="equipo.observaciones"
+                    height="350">
+
+                    <ng-template let-observacion="item">
+
+                        <GridLayout
+                            columns="40, *, auto"
+                            rows="auto, auto, auto"
+                            padding="8"
+                            margin="3">
+
+                            <!-- Icono -->
+                            <Label
+                                row="0"
+                                col="0"
+                                rowSpan="2"
+                                [text]="observacion.icono"
+                                fontSize="22"
+                                verticalAlignment="middle">
+                            </Label>
+
+                            <!-- Descripcion -->
+                            <Label
+                                row="0"
+                                col="1"
+                                colSpan="2"
+                                [text]="observacion.descripcion"
+                                textWrap="true"
+                                fontSize="16">
+                            </Label>
+
+                            <!-- Usuario -->
+                            <Label
+                                row="1"
+                                col="1"
+                                [text]="'Usuario: ' + observacion.usuario"
+                                fontSize="12">
+                            </Label>
+
+                            <!-- Estado -->
+                            <Label
+                                row="1"
+                                col="2"
+                                [text]="observacion.estado"
+                                fontSize="12">
+                            </Label>
+
+                            <!-- Voto positivo -->
+                            <Button
+                                row="2"
+                                col="0"
+                                [text]="'👍 ' + observacion.votosPositivos"
+                                (tap)="votarPositivo(observacion)">
+                            </Button>
+
+                            <!-- Voto negativo -->
+                            <Button
+                                row="2"
+                                col="1"
+                                [text]="'👎 ' + observacion.votosNegativos"
+                                (tap)="votarNegativo(observacion)">
+                            </Button>
+
+                            <!-- Action dialog -->
+                            <Button
+                                row="2"
+                                col="2"
+                                text="EDITAR"
+                                (tap)="editarObservacion(observacion)">
+                            </Button>
+
+                        </GridLayout>
+
+                    </ng-template>
+
+                </ListView>
+
+            </StackLayout>
+
+
+            <!-- EDICION DEL EQUIPO -->
+
+            <Button
+                text="EDITAR EQUIPO"
+                class="btn btn-primary"
+                *ngIf="equipo"
+                (tap)="editar()">
+            </Button>
+
+            <Button
+                text="VOLVER"
+                class="btn"
+                (tap)="volver()">
+            </Button>
+
+        </StackLayout>
+    </ScrollView>
+
+</PullToRefresh>

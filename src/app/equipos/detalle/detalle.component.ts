@@ -1,7 +1,14 @@
-import { Component, OnInit } from "@angular/core";
+import {
+    Component,
+    ElementRef,
+    OnInit,
+    ViewChild
+} from "@angular/core";
+
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "nativescript-angular/router";
 import { alert, action } from "tns-core-modules/ui/dialogs";
+import { Color } from "tns-core-modules/color";
 import { makeText } from "nativescript-toast";
 
 import {
@@ -20,14 +27,10 @@ export class DetalleComponent implements OnInit {
 
     public equipo: Equipo;
 
-    private descripciones: string[] = [
-        "Inspeccion visual realizada sin observaciones",
-        "Parametros electricos dentro del rango",
-        "Equipo revisado por mantenimiento",
-        "Temperatura de operacion verificada",
-        "Se recomienda nueva inspeccion",
-        "Condicion operativa verificada"
-    ];
+    // Practica de animaciones:
+    // referencia al control #panelAnimado de la vista.
+    @ViewChild("panelAnimado", { static: false })
+    public panelAnimado: ElementRef;
 
     constructor(
         private route: ActivatedRoute,
@@ -40,82 +43,144 @@ export class DetalleComponent implements OnInit {
         this.equipo = this.equiposService.getEquipo(id);
     }
 
-    public volver(): void {
-        this.routerExtensions.back();
-    }
+    public votarPositivo(observacion: Observacion): void {
 
-    public votoPositivo(observacion: Observacion): void {
         observacion.votosPositivos++;
 
         alert({
             title: "MineControl",
-            message: "Voto positivo registrado correctamente.",
+            message: "Se registro un voto positivo.",
             okButtonText: "Aceptar"
         });
     }
 
-    public votoNegativo(observacion: Observacion): void {
+    public votarNegativo(observacion: Observacion): void {
+
         observacion.votosNegativos++;
 
         alert({
             title: "MineControl",
-            message: "Voto negativo registrado correctamente.",
+            message: "Se registro un voto negativo.",
             okButtonText: "Aceptar"
         });
     }
 
-    public editarEstado(observacion: Observacion): void {
+    public editarObservacion(observacion: Observacion): void {
 
         action({
             message: "Seleccione el nuevo estado",
             cancelButtonText: "Cancelar",
             actions: [
-                "NORMAL",
-                "REVISAR",
-                "MANTENIMIENTO",
-                "CRITICO"
+                "PENDIENTE",
+                "REVISADO",
+                "ATENDIDO"
             ]
         }).then((resultado: string) => {
 
-            if (resultado && resultado !== "Cancelar") {
-
+            if (
+                resultado &&
+                resultado !== "Cancelar"
+            ) {
                 observacion.estado = resultado;
-                makeText("Observacion actualizada correctamente").show();
+
+                makeText(
+                    "Observacion actualizada correctamente"
+                ).show();
             }
         });
     }
 
     public actualizar(args: any): void {
 
-        const indice = Math.floor(
-            Math.random() * this.descripciones.length
-        );
+        const pullRefresh = args.object;
 
-        const nuevaObservacion: Observacion = {
-            id: Date.now(),
-            descripcion: this.descripciones[indice],
-            usuario: "MineControl",
-            estado: "NUEVO",
-            icono: "⚡",
-            votosPositivos: 0,
-            votosNegativos: 0
-        };
+        if (this.equipo && this.equipo.observaciones) {
 
-        this.equipo.observaciones.unshift(nuevaObservacion);
+            const numero =
+                this.equipo.observaciones.length + 1;
 
-        if (args && args.object) {
-            args.object.refresh();
+            this.equipo.observaciones.push({
+                id: numero,
+                descripcion: "Nueva observacion " + numero,
+                usuario: "Sistema",
+                estado: "PENDIENTE",
+                icono: "&#xf075;",
+                votosPositivos: 0,
+                votosNegativos: 0
+            });
+        }
+
+        if (pullRefresh) {
+            pullRefresh.refreshing = false;
         }
     }
-public editar(): void {
-    this.routerExtensions.navigate(
-        ["/equipos/editar", this.equipo.id],
-        {
-            transition: {
-                name: "slide"
-            }
-        }
-    );
-}
-}
 
+    public editar(): void {
+
+        this.routerExtensions.navigate(
+            ["/equipos/editar", this.equipo.id],
+            {
+                transition: {
+                    name: "slide"
+                }
+            }
+        );
+    }
+
+    // Requisito 3:
+    // animacion de color con delay.
+    public animarColor(): void {
+
+        if (!this.panelAnimado) {
+            return;
+        }
+
+        const vista = this.panelAnimado.nativeElement;
+
+        vista.animate({
+            backgroundColor: new Color("#4CAF50"),
+            duration: 1000,
+            delay: 500
+        }).then(() => {
+
+            return vista.animate({
+                backgroundColor: new Color("#FFFFFF"),
+                duration: 1000
+            });
+        });
+    }
+
+    // Requisito 4:
+    // segunda animacion usando scale y rotate.
+    public animarTransformacion(): void {
+
+        if (!this.panelAnimado) {
+            return;
+        }
+
+        const vista = this.panelAnimado.nativeElement;
+
+        vista.animate({
+            scale: {
+                x: 1.15,
+                y: 1.15
+            },
+            rotate: 360,
+            duration: 1200
+        }).then(() => {
+
+            return vista.animate({
+                scale: {
+                    x: 1,
+                    y: 1
+                },
+                rotate: 0,
+                duration: 500
+            });
+        });
+    }
+
+    public volver(): void {
+        this.routerExtensions.back();
+    }
+}
