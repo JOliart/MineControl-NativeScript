@@ -1,0 +1,63 @@
+.page {
+    padding: 15;
+}
+
+.cabecera {
+    margin-bottom: 10;
+}
+
+.titulo {
+    font-size: 24;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 10;
+    margin-bottom: 5;
+}
+
+.descripcion {
+    font-size: 14;
+    text-align: center;
+    margin-bottom: 10;
+}
+
+.btn-actualizar {
+    margin: 5 10 15 10;
+    font-weight: bold;
+}
+
+.lista-favoritos {
+    margin-top: 5;
+}
+
+.favorito {
+    padding: 15;
+    margin: 5 10;
+    border-width: 1;
+    border-color: #CCCCCC;
+}
+
+.codigo {
+    font-size: 18;
+    font-weight: bold;
+}
+
+.nombre {
+    font-size: 17;
+    font-weight: bold;
+    margin-top: 4;
+}
+
+.dato {
+    font-size: 14;
+    margin-top: 3;
+}
+
+.estado {
+    font-size: 14;
+    font-weight: bold;
+    margin-top: 3;
+}
+
+.btn-eliminar {
+    margin-top: 10;
+}

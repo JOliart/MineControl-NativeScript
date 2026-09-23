@@ -5,11 +5,16 @@ import { NativeScriptRouterModule } from "nativescript-angular/router";
 import { ListaComponent } from "./lista/lista.component";
 import { DetalleComponent } from "./detalle/detalle.component";
 import { EditarComponent } from "./editar/editar.component";
+import { FavoritosComponent } from "./favoritos/favoritos.component";
 
 const routes: Routes = [
     {
         path: "",
         component: ListaComponent
+    },
+    {
+        path: "favoritos",
+        component: FavoritosComponent
     },
     {
         path: "detalle/:id",

@@ -5,12 +5,11 @@
     </Label>
 </ActionBar>
 
-<GridLayout rows="auto, auto, *" class="page">
+<GridLayout rows="auto, auto, auto, *" class="page">
 
-    <!-- Encabezado -->
+    <!-- Cabecera -->
     <StackLayout row="0">
 
-        <!-- Imagen cargada desde App_Resources -->
         <Image
             src="res://minecontrol"
             width="60"
@@ -30,8 +29,7 @@
 
     </StackLayout>
 
-
-    <!-- Formulario de busqueda -->
+    <!-- Buscador con Two Way Binding -->
     <GridLayout
         row="1"
         columns="*, auto, auto"
@@ -62,49 +60,71 @@
 
     </GridLayout>
 
-
-    <!-- Pull to Refresh -->
-    <PullToRefresh
+    <!-- Acceso al listado SQLite de favoritos -->
+    <Button
         row="2"
+        text="★ VER FAVORITOS"
+        class="btn-favoritos"
+        (tap)="verFavoritos()">
+    </Button>
+
+    <!-- Pull To Refresh -->
+    <PullToRefresh
+        row="3"
         (refresh)="refrescar($event)">
 
-        <!-- ListView requerido por la practica -->
         <ListView
             [items]="resultadosBusqueda"
             class="lista-equipos">
 
             <ng-template let-equipo="item">
 
-                <!-- Plantilla anidada basada en FlexboxLayout -->
                 <FlexboxLayout
                     flexDirection="column"
-                    class="equipo"
-                    (tap)="verDetalle(equipo)"
-                    (longPress)="cambiarEstado(equipo)">
+                    class="equipo">
 
-                    <Label
-                        class="codigo"
-                        [text]="equipo.codigo">
-                    </Label>
+                    <!-- Tap sobre los datos abre el detalle -->
+                    <StackLayout
+                        (tap)="verDetalle(equipo)">
 
-                    <Label
-                        class="nombre"
-                        [text]="equipo.nombre">
-                    </Label>
+                        <Label
+                            class="codigo"
+                            [text]="equipo.codigo">
+                        </Label>
 
-                    <Label
-                        [text]="'Area: ' + equipo.area">
-                    </Label>
+                        <Label
+                            class="nombre"
+                            [text]="equipo.nombre">
+                        </Label>
 
-                    <Label
-                        class="estado"
-                        [text]="'Estado: ' + equipo.estado">
-                    </Label>
+                        <Label
+                            [text]="'Área: ' + equipo.area">
+                        </Label>
 
-                    <Label
-                        class="ayuda"
-                        text="Tap: ver detalle | Mantener pulsado: cambiar estado">
-                    </Label>
+                        <Label
+                            class="estado"
+                            [text]="'Estado: ' + equipo.estado">
+                        </Label>
+
+                    </StackLayout>
+
+                    <!--
+                        Requisito de la practica:
+                        icono/boton dentro del ListView que
+                        guarda el item mediante SQLite.
+                    -->
+                    <Button
+                        text="★ FAVORITO"
+                        class="btn-favorito"
+                        (tap)="agregarFavorito(equipo)">
+                    </Button>
+
+                    <!-- Mantiene la funcionalidad Action -->
+                    <Button
+                        text="CAMBIAR ESTADO"
+                        class="btn-estado"
+                        (tap)="cambiarEstado(equipo)">
+                    </Button>
 
                 </FlexboxLayout>
 

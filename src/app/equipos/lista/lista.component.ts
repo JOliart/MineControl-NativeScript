@@ -5,6 +5,7 @@ import { action } from "tns-core-modules/ui/dialogs";
 import * as Toast from "nativescript-toast";
 
 import { Equipo, EquiposService } from "../equipos.service";
+import { FavoritosService } from "../favoritos.service";
 
 @Component({
     selector: "EquiposLista",
@@ -22,7 +23,8 @@ export class ListaComponent implements OnInit {
 
     constructor(
         private equiposService: EquiposService,
-        private routerExtensions: RouterExtensions
+        private routerExtensions: RouterExtensions,
+        private favoritosService: FavoritosService
     ) {}
 
     public ngOnInit(): void {
@@ -40,9 +42,6 @@ export class ListaComponent implements OnInit {
 
     /*
      * Consume el WebService mediante un Observable.
-     *
-     * El servicio retorna Observable<Equipo[]> y subscribe()
-     * recibe la respuesta asincronicamente.
      */
     public cargarEquipos(filtro?: string): void {
 
@@ -53,11 +52,6 @@ export class ListaComponent implements OnInit {
             .subscribe(
                 (datos: Equipo[]) => {
 
-                    /*
-                     * Variable de estado local.
-                     * Al actualizar este arreglo, el ListView
-                     * se actualiza reactivamente.
-                     */
                     this.equipos = datos;
                     this.resultadosBusqueda = datos.slice();
 
@@ -91,9 +85,7 @@ export class ListaComponent implements OnInit {
         const texto = this.textoBusqueda.trim();
 
         if (!texto) {
-
             this.cargarEquipos();
-
             return;
         }
 
@@ -128,10 +120,6 @@ export class ListaComponent implements OnInit {
 
         this.textoBusqueda = "";
 
-        /*
-         * Vuelve a consultar todos los equipos
-         * desde Express.
-         */
         this.cargarEquipos();
 
         Toast.makeText(
@@ -140,11 +128,45 @@ export class ListaComponent implements OnInit {
     }
 
     /*
-     * Dialogo Action.
-     * Modifica el estado del objeto seleccionado
-     * dentro de la aplicacion.
+     * Guarda el equipo seleccionado como favorito.
+     *
+     * El servicio utiliza SQLite y almacena
+     * los datos en la tabla favoritos.
      */
-    public cambiarEstado(equipo: Equipo): void {
+    public agregarFavorito(
+        equipo: Equipo
+    ): void {
+
+        this.favoritosService
+            .agregarFavorito(equipo)
+            .then(() => {
+
+                Toast.makeText(
+                    "Favorito agregado: " +
+                    equipo.nombre
+                ).show();
+            })
+            .catch((error: any) => {
+
+                console.log(
+                    "Error al guardar favorito:"
+                );
+
+                console.log(error);
+
+                Toast.makeText(
+                    "No se pudo guardar el favorito"
+                ).show();
+            });
+    }
+
+    /*
+     * Dialogo Action.
+     * Modifica el estado del objeto seleccionado.
+     */
+    public cambiarEstado(
+        equipo: Equipo
+    ): void {
 
         const opciones = [
             "OPERATIVO",
@@ -179,9 +201,7 @@ export class ListaComponent implements OnInit {
 
     /*
      * Pull To Refresh.
-     *
-     * Ahora el refresco obtiene nuevamente
-     * los datos desde el WebService.
+     * Obtiene nuevamente los datos del WebService.
      */
     public refrescar(args: any): void {
 
@@ -192,10 +212,6 @@ export class ListaComponent implements OnInit {
             .subscribe(
                 (datos: Equipo[]) => {
 
-                    /*
-                     * Actualiza el arreglo local con
-                     * la respuesta HTTP.
-                     */
                     this.equipos = datos;
                     this.resultadosBusqueda =
                         datos.slice();
@@ -232,7 +248,9 @@ export class ListaComponent implements OnInit {
     /*
      * Navegacion programatica al detalle.
      */
-    public verDetalle(equipo: Equipo): void {
+    public verDetalle(
+        equipo: Equipo
+    ): void {
 
         this.routerExtensions.navigate(
             [
@@ -242,6 +260,22 @@ export class ListaComponent implements OnInit {
             {
                 transition: {
                     name: "fade"
+                }
+            }
+        );
+    }
+
+    /*
+     * Abre la futura pantalla que mostrara
+     * los registros almacenados en SQLite.
+     */
+    public verFavoritos(): void {
+
+        this.routerExtensions.navigate(
+            ["/equipos/favoritos"],
+            {
+                transition: {
+                    name: "slideLeft"
                 }
             }
         );

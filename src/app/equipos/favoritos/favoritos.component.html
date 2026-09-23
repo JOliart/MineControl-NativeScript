@@ -1,0 +1,100 @@
+<ActionBar class="action-bar">
+
+    <NavigationButton
+        text="Atras"
+        android.systemIcon="ic_menu_back"
+        (tap)="volver()">
+    </NavigationButton>
+
+    <Label
+        class="action-bar-title"
+        text="MineControl - Favoritos">
+    </Label>
+
+</ActionBar>
+
+<GridLayout
+    rows="auto, auto, *"
+    class="page">
+
+    <!-- Cabecera -->
+    <StackLayout
+        row="0"
+        class="cabecera">
+
+        <Label
+            class="titulo"
+            text="Equipos Favoritos">
+        </Label>
+
+        <Label
+            class="descripcion"
+            text="Equipos almacenados localmente en SQLite"
+            textWrap="true">
+        </Label>
+
+    </StackLayout>
+
+
+    <!-- Boton para volver a consultar SQLite -->
+    <Button
+        row="1"
+        text="ACTUALIZAR FAVORITOS"
+        class="btn-actualizar"
+        (tap)="actualizar()">
+    </Button>
+
+
+    <!--
+        Segundo ListView de la practica.
+
+        Los datos mostrados aqui no provienen del
+        WebService Express.
+
+        Se obtienen desde la tabla favoritos
+        almacenada localmente mediante SQLite.
+    -->
+    <ListView
+        row="2"
+        [items]="favoritos"
+        class="lista-favoritos">
+
+        <ng-template let-favorito="item">
+
+            <FlexboxLayout
+                flexDirection="column"
+                class="favorito">
+
+                <Label
+                    class="codigo"
+                    [text]="favorito.codigo">
+                </Label>
+
+                <Label
+                    class="nombre"
+                    [text]="favorito.nombre">
+                </Label>
+
+                <Label
+                    class="dato"
+                    [text]="'Area: ' + favorito.area">
+                </Label>
+
+                <Label
+                    class="estado"
+                    [text]="'Estado: ' + favorito.estado">
+                </Label>
+
+                <Button
+                    text="ELIMINAR DE FAVORITOS"
+                    class="btn-eliminar"
+                    (tap)="eliminar(favorito)">
+                </Button>
+
+            </FlexboxLayout>
+
+        </ng-template>
+
+    </ListView>
+
+</GridLayout>

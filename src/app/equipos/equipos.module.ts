@@ -4,8 +4,12 @@ import { NativeScriptFormsModule } from "nativescript-angular/forms";
 import { NativeScriptHttpClientModule } from "nativescript-angular/http-client";
 
 import { EquiposRoutingModule } from "./equipos-routing.module";
+
 import { ListaComponent } from "./lista/lista.component";
 import { DetalleComponent } from "./detalle/detalle.component";
+import { EditarComponent } from "./editar/editar.component";
+import { FavoritosComponent } from "./favoritos/favoritos.component";
+
 import { MinimoBusquedaDirective } from "./minimo-busqueda.directive";
 
 @NgModule({
@@ -18,6 +22,8 @@ import { MinimoBusquedaDirective } from "./minimo-busqueda.directive";
     declarations: [
         ListaComponent,
         DetalleComponent,
+        EditarComponent,
+        FavoritosComponent,
         MinimoBusquedaDirective
     ],
     schemas: [
