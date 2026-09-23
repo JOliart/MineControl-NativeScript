@@ -1,4 +1,5 @@
 <ActionBar class="action-bar">
+
     <NavigationButton
         text="Atras"
         android.systemIcon="ic_menu_back"
@@ -9,111 +10,127 @@
         class="action-bar-title"
         text="Detalle del Equipo">
     </Label>
+
 </ActionBar>
 
-<GridLayout rows="auto, auto, auto, *" class="page" *ngIf="equipo">
+<ScrollView>
 
-    <Label
-        row="0"
-        class="titulo"
-        text="MineControl">
-    </Label>
+    <StackLayout
+        class="page"
+        *ngIf="equipo">
 
-    <StackLayout row="1" class="datos-equipo">
-        <Label class="codigo" [text]="equipo.codigo"></Label>
-        <Label class="nombre" [text]="equipo.nombre"></Label>
-        <Label class="dato" [text]="'Area: ' + equipo.area"></Label>
-        <Label class="dato" [text]="'Estado: ' + equipo.estado"></Label>
+        <Label
+            class="titulo"
+            text="MineControl">
+        </Label>
+
+        <Label
+            class="codigo"
+            [text]="equipo.codigo">
+        </Label>
+
+        <Label
+            class="nombre"
+            [text]="equipo.nombre">
+        </Label>
+
+        <Label
+            class="dato"
+            [text]="'Area: ' + equipo.area">
+        </Label>
+
+        <Label
+            class="dato"
+            [text]="'Estado: ' + equipo.estado">
+        </Label>
+
+        <!-- Listado avanzado de observaciones -->
+        <Label
+            class="subtitulo"
+            text="Observaciones">
+        </Label>
+
+        <ListView
+            [items]="equipo.observaciones"
+            class="lista-observaciones">
+
+            <ng-template
+                let-observacion="item"
+                let-i="index">
+
+                <GridLayout
+                    columns="auto, *, auto"
+                    rows="auto, auto"
+                    class="observacion">
+
+                    <Label
+                        col="0"
+                        row="0"
+                        rowSpan="2"
+                        class="icono-observacion"
+                        text="&#xf075;">
+                    </Label>
+
+                    <Label
+                        col="1"
+                        row="0"
+                        class="texto-observacion"
+                        [text]="observacion.texto"
+                        textWrap="true">
+                    </Label>
+
+                    <Label
+                        col="1"
+                        row="1"
+                        class="estado-observacion"
+                        [text]="'Estado: ' + observacion.estado">
+                    </Label>
+
+                    <StackLayout
+                        col="2"
+                        row="0"
+                        rowSpan="2"
+                        orientation="horizontal">
+
+                        <Button
+                            text="+"
+                            class="btn-voto"
+                            (tap)="votarPositivo(observacion)">
+                        </Button>
+
+                        <Button
+                            text="-"
+                            class="btn-voto"
+                            (tap)="votarNegativo(observacion)">
+                        </Button>
+
+                        <Button
+                            text="EDITAR"
+                            class="btn-accion"
+                            (tap)="editarObservacion(observacion)">
+                        </Button>
+
+                    </StackLayout>
+
+                </GridLayout>
+
+            </ng-template>
+
+        </ListView>
+
+        <!-- Nuevo componente de edicion de datos -->
+        <Button
+            text="EDITAR EQUIPO"
+            class="btn btn-primary"
+            (tap)="editar()">
+        </Button>
+
+        <Button
+            text="VOLVER"
+            class="btn"
+            (tap)="volver()">
+        </Button>
+
     </StackLayout>
 
-    <Label
-        row="2"
-        class="subtitulo"
-        text="Historial / Observaciones">
-    </Label>
-
-    <ListView
-        row="3"
-        [items]="equipo.observaciones"
-        (pullToRefresh)="actualizar($event)"
-        pullToRefresh="true">
-
-        <ng-template let-observacion="item">
-
-            <GridLayout
-                columns="45, *, auto"
-                rows="auto, auto"
-                class="observacion">
-
-                <Label
-                    row="0"
-                    rowSpan="2"
-                    col="0"
-                    [text]="observacion.icono"
-                    class="icono">
-                </Label>
-
-                <Label
-                    row="0"
-                    col="1"
-                    [text]="observacion.descripcion"
-                    textWrap="true"
-                    class="descripcion">
-                </Label>
-
-                <GridLayout
-                    row="0"
-                    rowSpan="2"
-                    col="2"
-                    columns="auto, auto, auto"
-                    class="votos">
-
-                    <Button
-                        col="0"
-                        [text]="'👍 ' + observacion.votosPositivos"
-                        (tap)="votoPositivo(observacion)"
-                        class="btn-voto">
-                    </Button>
-
-                    <Button
-                        col="1"
-                        [text]="'👎 ' + observacion.votosNegativos"
-                        (tap)="votoNegativo(observacion)"
-                        class="btn-voto">
-                    </Button>
-
-		    <Button
-			col="2"
-    			text="EDITAR"
-    			(tap)="editarEstado(observacion)"
-    			class="btn-editar">
-		    </Button>
-
-                </GridLayout>
-
-                <GridLayout
-                    row="1"
-                    col="1"
-                    columns="*, auto">
-
-                    <Label
-                        col="0"
-                        [text]="'Usuario: ' + observacion.usuario"
-                        class="usuario">
-                    </Label>
-
-                    <Label
-                        col="1"
-                        [text]="observacion.estado"
-                        class="estado-observacion">
-                    </Label>
-
-                </GridLayout>
-
-            </GridLayout>
-
-        </ng-template>
-
-    </ListView>
-
-</GridLayout>
+</ScrollView>

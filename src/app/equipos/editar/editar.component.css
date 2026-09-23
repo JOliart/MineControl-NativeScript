@@ -1,0 +1,45 @@
+.page {
+    padding: 20;
+}
+
+.titulo {
+    font-size: 24;
+    font-weight: bold;
+    margin-bottom: 15;
+}
+
+.codigo {
+    font-size: 16;
+    font-weight: bold;
+    margin-bottom: 20;
+}
+
+.etiqueta {
+    font-size: 15;
+    font-weight: bold;
+    margin-top: 12;
+    margin-bottom: 4;
+}
+
+TextField {
+    font-size: 16;
+    padding: 10;
+    margin-bottom: 4;
+    border-width: 1;
+    border-color: #cccccc;
+    border-radius: 5;
+}
+
+.error {
+    font-size: 13;
+    color: #d32f2f;
+    margin-bottom: 8;
+}
+
+.btn {
+    margin-top: 10;
+}
+
+.btn-primary {
+    font-weight: bold;
+}

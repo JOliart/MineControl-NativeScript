@@ -4,6 +4,7 @@ import { NativeScriptRouterModule } from "nativescript-angular/router";
 
 import { ListaComponent } from "./lista/lista.component";
 import { DetalleComponent } from "./detalle/detalle.component";
+import { EditarComponent } from "./editar/editar.component";
 
 const routes: Routes = [
     {
@@ -13,6 +14,10 @@ const routes: Routes = [
     {
         path: "detalle/:id",
         component: DetalleComponent
+    },
+    {
+        path: "editar/:id",
+        component: EditarComponent
     }
 ];
 

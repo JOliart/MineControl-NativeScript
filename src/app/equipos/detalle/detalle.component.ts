@@ -107,5 +107,15 @@ export class DetalleComponent implements OnInit {
             args.object.refresh();
         }
     }
+public editar(): void {
+    this.routerExtensions.navigate(
+        ["/equipos/editar", this.equipo.id],
+        {
+            transition: {
+                name: "slide"
+            }
+        }
+    );
+}
 }
 

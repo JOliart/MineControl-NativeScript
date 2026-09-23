@@ -1,0 +1,84 @@
+<ActionBar class="action-bar">
+
+    <NavigationButton
+        text="Atras"
+        android.systemIcon="ic_menu_back"
+        (tap)="cancelar()">
+    </NavigationButton>
+
+    <Label
+        class="action-bar-title"
+        text="Editar Equipo">
+    </Label>
+
+</ActionBar>
+
+<ScrollView>
+
+    <StackLayout
+        class="page"
+        *ngIf="equipo && formulario">
+
+        <Label
+            class="titulo"
+            text="Edicion de datos basicos">
+        </Label>
+
+        <Label
+            class="codigo"
+            [text]="'Equipo: ' + equipo.codigo">
+        </Label>
+
+        <Label
+            class="etiqueta"
+            text="Nombre del equipo">
+        </Label>
+
+        <TextField
+            [formControl]="nombre"
+            hint="Ingrese el nombre del equipo">
+        </TextField>
+
+        <Label
+            *ngIf="guardado && nombre.hasError('required')"
+            class="error"
+            text="El nombre es obligatorio.">
+        </Label>
+
+        <Label
+            *ngIf="guardado && nombre.hasError('nombreCorto')"
+            class="error"
+            text="El nombre debe tener al menos 5 caracteres.">
+        </Label>
+
+        <Label
+            class="etiqueta"
+            text="Area">
+        </Label>
+
+        <TextField
+            [formControl]="area"
+            hint="Ingrese el area">
+        </TextField>
+
+        <Label
+            *ngIf="guardado && area.hasError('required')"
+            class="error"
+            text="El area es obligatoria.">
+        </Label>
+
+        <Button
+            text="GUARDAR CAMBIOS"
+            class="btn btn-primary"
+            (tap)="guardar()">
+        </Button>
+
+        <Button
+            text="CANCELAR"
+            class="btn"
+            (tap)="cancelar()">
+        </Button>
+
+    </StackLayout>
+
+</ScrollView>
