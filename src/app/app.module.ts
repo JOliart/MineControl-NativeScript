@@ -4,31 +4,51 @@ import { NativeScriptUISideDrawerModule } from "nativescript-ui-sidedrawer/angul
 import { registerElement } from "nativescript-angular/element-registry";
 import { PullToRefresh } from "nativescript-pulltorefresh";
 
+import { StoreModule } from "@ngrx/store";
+
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 
+import {
+    mineControlReducer
+} from "./store/minecontrol.reducer";
+
 /*
  * Registro del plugin PullToRefresh.
- *
- * El cast a any es necesario por compatibilidad entre las
- * definiciones TypeScript del plugin legado y NativeScript Angular.
  */
-registerElement("PullToRefresh", () => PullToRefresh as any);
+registerElement(
+    "PullToRefresh",
+    () => PullToRefresh as any
+);
 
 @NgModule({
     bootstrap: [
         AppComponent
     ],
+
     imports: [
         AppRoutingModule,
         NativeScriptModule,
-        NativeScriptUISideDrawerModule
+        NativeScriptUISideDrawerModule,
+
+        /*
+         * Store global de NgRx.
+         *
+         * El feature "mineControl" contiene
+         * los equipos seleccionados mediante
+         * la accion LEER AHORA.
+         */
+        StoreModule.forRoot({
+            mineControl: mineControlReducer
+        })
     ],
+
     declarations: [
         AppComponent
     ],
+
     schemas: [
         NO_ERRORS_SCHEMA
     ]
 })
-export class AppModule { }
+export class AppModule {}

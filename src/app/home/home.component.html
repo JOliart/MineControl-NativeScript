@@ -1,21 +1,111 @@
 <ActionBar>
-    <!-- 
-    Use the NavigationButton as a side-drawer button in Android
-    because ActionItems are shown on the right side of the ActionBar
-    -->
-    <NavigationButton ios:visibility="collapsed" icon="res://menu" (tap)="onDrawerButtonTap()"></NavigationButton>
-    <!-- 
-    Use the ActionItem for IOS with position set to left. Using the
-    NavigationButton as a side-drawer button in iOS is not possible,
-    because its function is to always navigate back in the application.
-    -->
-    <ActionItem icon="res://menu" android:visibility="collapsed" (tap)="onDrawerButtonTap()"
+
+    <NavigationButton
+        ios:visibility="collapsed"
+        icon="res://menu"
+        (tap)="onDrawerButtonTap()">
+    </NavigationButton>
+
+    <ActionItem
+        icon="res://menu"
+        android:visibility="collapsed"
+        (tap)="onDrawerButtonTap()"
         ios.position="left">
     </ActionItem>
-    <Label text="Home"></Label>
+
+    <Label text="MineControl"></Label>
+
 </ActionBar>
 
-<GridLayout class="page__content">
-    <Label class="page__content-icon fas" text="&#xf015;"></Label>
-    <Label class="page__content-placeholder" text="<!-- Page content goes here -->"></Label>
+
+<GridLayout
+    rows="auto, auto, *"
+    class="page">
+
+    <!-- Cabecera -->
+
+    <StackLayout
+        row="0"
+        padding="20">
+
+        <Label
+            text="MineControl"
+            fontSize="26"
+            fontWeight="bold">
+        </Label>
+
+        <Label
+            text="Equipos seleccionados para Leer ahora"
+            textWrap="true"
+            fontSize="16"
+            marginTop="5">
+        </Label>
+
+    </StackLayout>
+
+
+    <!-- Contador obtenido del estado reactivo -->
+
+    <Label
+        row="1"
+        [text]="'Equipos en lectura: ' + equiposLeerAhora.length"
+        marginLeft="20"
+        marginRight="20"
+        marginBottom="10"
+        fontWeight="bold">
+    </Label>
+
+
+    <!--
+        REQUISITO REDUX / NGRX
+
+        Este ListView se actualiza reactivamente
+        a partir de store.select(selectLeerAhora).
+    -->
+
+    <ListView
+        row="2"
+        [items]="equiposLeerAhora">
+
+        <ng-template let-equipo="item">
+
+            <StackLayout
+                padding="15"
+                margin="5">
+
+                <Label
+                    [text]="equipo.codigo"
+                    fontSize="14"
+                    fontWeight="bold">
+                </Label>
+
+                <Label
+                    [text]="equipo.nombre"
+                    fontSize="18"
+                    fontWeight="bold"
+                    textWrap="true">
+                </Label>
+
+                <Label
+                    [text]="'Area: ' + equipo.area"
+                    marginTop="5">
+                </Label>
+
+                <Label
+                    [text]="'Estado: ' + equipo.estado"
+                    marginTop="3">
+                </Label>
+
+                <Button
+                    text="QUITAR DE LEER AHORA"
+                    (tap)="quitar(equipo)"
+                    marginTop="10">
+                </Button>
+
+            </StackLayout>
+
+        </ng-template>
+
+    </ListView>
+
 </GridLayout>

@@ -2,10 +2,20 @@ import { Component, OnInit } from "@angular/core";
 import { RouterExtensions } from "nativescript-angular/router";
 import * as Toast from "nativescript-toast";
 
+import { Store } from "@ngrx/store";
+
 import {
     Favorito,
     FavoritosService
 } from "../favoritos.service";
+
+import {
+    LeerAhora
+} from "../../store/minecontrol.actions";
+
+import {
+    MineControlState
+} from "../../store/minecontrol.reducer";
 
 @Component({
     selector: "EquiposFavoritos",
@@ -20,7 +30,8 @@ export class FavoritosComponent implements OnInit {
 
     constructor(
         private favoritosService: FavoritosService,
-        private routerExtensions: RouterExtensions
+        private routerExtensions: RouterExtensions,
+        private store: Store<MineControlState>
     ) {}
 
     public ngOnInit(): void {
@@ -34,9 +45,6 @@ export class FavoritosComponent implements OnInit {
 
     /*
      * Consulta SQLite mediante FavoritosService.
-     *
-     * El resultado se asigna al arreglo local
-     * favoritos para actualizar el ListView.
      */
     public cargarFavoritos(): void {
 
@@ -47,7 +55,6 @@ export class FavoritosComponent implements OnInit {
             .then((datos: Favorito[]) => {
 
                 this.favoritos = datos;
-
                 this.cargando = false;
 
                 if (datos.length === 0) {
@@ -74,6 +81,35 @@ export class FavoritosComponent implements OnInit {
     }
 
     /*
+     * Requisito Redux / NgRx:
+     *
+     * El boton LEER AHORA despacha una Action
+     * al Store global.
+     *
+     * El componente NO modifica directamente
+     * el estado Redux.
+     */
+    public leerAhora(
+        favorito: Favorito
+    ): void {
+
+        this.store.dispatch(
+            new LeerAhora({
+                equipoId: favorito.equipoId,
+                codigo: favorito.codigo,
+                nombre: favorito.nombre,
+                area: favorito.area,
+                estado: favorito.estado
+            })
+        );
+
+        Toast.makeText(
+            "Leer ahora: " +
+            favorito.nombre
+        ).show();
+    }
+
+    /*
      * Elimina un registro de SQLite.
      */
     public eliminar(
@@ -91,10 +127,6 @@ export class FavoritosComponent implements OnInit {
                     favorito.nombre
                 ).show();
 
-                /*
-                 * Volvemos a consultar SQLite
-                 * para actualizar el ListView.
-                 */
                 this.cargarFavoritos();
             })
             .catch((error: any) => {
@@ -112,7 +144,8 @@ export class FavoritosComponent implements OnInit {
     }
 
     /*
-     * Permite actualizar manualmente el listado.
+     * Actualiza manualmente el listado
+     * consultando nuevamente SQLite.
      */
     public actualizar(): void {
 

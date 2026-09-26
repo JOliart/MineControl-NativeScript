@@ -49,6 +49,8 @@
     "@angular/platform-browser-dynamic": "~8.2.0",
     "@angular/router": "~8.2.0",
     "@nativescript/theme": "~2.3.0",
+    "@ngrx/effects": "^8.6.1",
+    "@ngrx/store": "^8.6.1",
     "nativescript-angular": "~8.21.0",
     "nativescript-pulltorefresh": "^1.1.10",
     "nativescript-sqlite": "^2.3.3",

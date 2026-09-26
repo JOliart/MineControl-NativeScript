@@ -35,8 +35,7 @@
 
     </StackLayout>
 
-
-    <!-- Boton para volver a consultar SQLite -->
+    <!-- Actualiza la consulta de favoritos desde SQLite -->
     <Button
         row="1"
         text="ACTUALIZAR FAVORITOS"
@@ -44,16 +43,7 @@
         (tap)="actualizar()">
     </Button>
 
-
-    <!--
-        Segundo ListView de la practica.
-
-        Los datos mostrados aqui no provienen del
-        WebService Express.
-
-        Se obtienen desde la tabla favoritos
-        almacenada localmente mediante SQLite.
-    -->
+    <!-- Listado de favoritos almacenados en SQLite -->
     <ListView
         row="2"
         [items]="favoritos"
@@ -85,6 +75,22 @@
                     [text]="'Estado: ' + favorito.estado">
                 </Label>
 
+                <!--
+                    REQUISITO REDUX / NGRX
+
+                    Al pulsar LEER AHORA se ejecuta
+                    leerAhora(favorito).
+
+                    El componente despacha una Action
+                    al Store mediante store.dispatch().
+                -->
+                <Button
+                    text="LEER AHORA"
+                    class="btn-leer"
+                    (tap)="leerAhora(favorito)">
+                </Button>
+
+                <!-- Persistencia SQLite -->
                 <Button
                     text="ELIMINAR DE FAVORITOS"
                     class="btn-eliminar"
