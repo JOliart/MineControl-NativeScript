@@ -10,6 +10,7 @@ import { RouterExtensions } from "nativescript-angular/router";
 import { action, alert } from "tns-core-modules/ui/dialogs";
 import { Color } from "tns-core-modules/color";
 import * as Toast from "nativescript-toast";
+import * as SocialShare from "nativescript-social-share";
 
 import {
     Equipo,
@@ -283,7 +284,33 @@ export class DetalleComponent implements OnInit {
         });
     }
 
+    /*
+     * Comparte la informacion del equipo utilizando
+     * el plugin nativescript-social-share.
+     */
+    public compartirTexto(): void {
+
+        if (!this.equipo) {
+            Toast.makeText(
+                "No hay informacion del equipo para compartir"
+            ).show();
+            return;
+        }
+
+        const mensaje =
+            "MineControl - Informacion del equipo" +
+            "`nCodigo: " + this.equipo.codigo +
+            "`nNombre: " + this.equipo.nombre +
+            "`nArea: " + this.equipo.area +
+            "`nEstado: " + this.equipo.estado;
+
+        SocialShare.shareText(
+            mensaje,
+            "Compartir equipo"
+        );
+    }
     public volver(): void {
         this.routerExtensions.back();
     }
 }
+

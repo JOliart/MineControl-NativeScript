@@ -14,7 +14,7 @@
 </ActionBar>
 
 <GridLayout
-    rows="auto, auto, *"
+    rows="auto, auto, auto, *"
     class="page">
 
     <!-- Cabecera -->
@@ -43,9 +43,17 @@
         (tap)="actualizar()">
     </Button>
 
+    <!-- SOCIAL SHARE - COMPARTIR IMAGEN -->
+    <Button
+        row="2"
+        text="COMPARTIR IMAGEN"
+        class="btn-actualizar"
+        (tap)="compartirImagen()">
+    </Button>
+
     <!-- Listado de favoritos almacenados en SQLite -->
     <ListView
-        row="2"
+        row="3"
         [items]="favoritos"
         class="lista-favoritos">
 
@@ -104,3 +112,4 @@
     </ListView>
 
 </GridLayout>
+

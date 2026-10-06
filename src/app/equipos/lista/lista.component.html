@@ -60,13 +60,26 @@
 
     </GridLayout>
 
-    <!-- Acceso al listado SQLite de favoritos -->
-    <Button
+    <!-- Accesos a Favoritos y Google Maps -->
+    <GridLayout
         row="2"
-        text="★ VER FAVORITOS"
-        class="btn-favoritos"
-        (tap)="verFavoritos()">
-    </Button>
+        columns="*, *">
+
+        <Button
+            col="0"
+            text="★ VER FAVORITOS"
+            class="btn-favoritos"
+            (tap)="verFavoritos()">
+        </Button>
+
+        <Button
+            col="1"
+            text="VER MAPA"
+            class="btn-favoritos"
+            (tap)="verMapa()">
+        </Button>
+
+    </GridLayout>
 
     <!-- Pull To Refresh -->
     <PullToRefresh
@@ -98,7 +111,7 @@
                         </Label>
 
                         <Label
-                            [text]="'Área: ' + equipo.area">
+                            [text]="'Area: ' + equipo.area">
                         </Label>
 
                         <Label
@@ -108,18 +121,14 @@
 
                     </StackLayout>
 
-                    <!--
-                        Requisito de la practica:
-                        icono/boton dentro del ListView que
-                        guarda el item mediante SQLite.
-                    -->
+                    <!-- Guarda el equipo mediante SQLite -->
                     <Button
                         text="★ FAVORITO"
                         class="btn-favorito"
                         (tap)="agregarFavorito(equipo)">
                     </Button>
 
-                    <!-- Mantiene la funcionalidad Action -->
+                    <!-- Action Dialog -->
                     <Button
                         text="CAMBIAR ESTADO"
                         class="btn-estado"

@@ -2,10 +2,10 @@
   "nativescript": {
     "id": "org.nativescript.DrawerNavigation",
     "templateVersion": "v2",
-    "tns-android": {
+    "tns-ios": {
       "version": "6.5.0"
     },
-    "tns-ios": {
+    "tns-android": {
       "version": "6.5.0"
     }
   },
@@ -37,7 +37,8 @@
     "url": "https://github.com/NativeScript/NativeScript/issues"
   },
   "scripts": {
-    "lint": "tslint \"src/**/*.ts\""
+    "lint": "tslint \"src/**/*.ts\"",
+    "postinstall": "node scripts/patch-nativescript-permissions.js"
   },
   "dependencies": {
     "@angular/animations": "~8.2.0",
@@ -48,14 +49,20 @@
     "@angular/platform-browser": "~8.2.0",
     "@angular/platform-browser-dynamic": "~8.2.0",
     "@angular/router": "~8.2.0",
+    "@master.technology/permissions": "^2.0.1",
     "@nativescript/theme": "~2.3.0",
     "@ngrx/effects": "^8.6.1",
     "@ngrx/store": "^8.6.1",
+    "@nstudio/nativescript-pulltorefresh": "^1.1.1",
     "nativescript-angular": "~8.21.0",
-    "nativescript-pulltorefresh": "^1.1.10",
+    "nativescript-camera": "^5.0.0-androidx",
+    "nativescript-google-maps-sdk": "^2.9.1",
+    "nativescript-plugin-firebase": "^10.6.3",
+    "nativescript-social-share": "^1.6.0",
     "nativescript-sqlite": "^2.3.3",
     "nativescript-toast": "^2.0.0",
     "nativescript-ui-sidedrawer": "~8.0.0",
+    "nativescript-unit-test-runner": "^0.7.0",
     "reflect-metadata": "~0.1.12",
     "rxjs": "^6.4.0",
     "tns-core-modules": "~6.5.0",
@@ -64,7 +71,12 @@
   "devDependencies": {
     "@angular/compiler-cli": "~8.2.0",
     "@ngtools/webpack": "~8.2.0",
+    "@types/jasmine": "3.5.11",
     "codelyzer": "~4.5.0",
+    "karma": "^4.4.1",
+    "karma-jasmine": "3.3.1",
+    "karma-nativescript-launcher": "0.4.0",
+    "karma-webpack": "3.0.5",
     "nativescript-dev-webpack": "~1.5.0",
     "node-sass": "^4.7.1",
     "tslint": "~5.19.0",

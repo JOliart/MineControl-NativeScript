@@ -1,8 +1,10 @@
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
 import { NativeScriptModule } from "nativescript-angular/nativescript.module";
+import { NativeScriptHttpClientModule } from "nativescript-angular/http-client";
 import { NativeScriptUISideDrawerModule } from "nativescript-ui-sidedrawer/angular";
 import { registerElement } from "nativescript-angular/element-registry";
-import { PullToRefresh } from "nativescript-pulltorefresh";
+
+import { PullToRefresh } from "@nstudio/nativescript-pulltorefresh";
 
 import { StoreModule } from "@ngrx/store";
 
@@ -29,6 +31,15 @@ registerElement(
     imports: [
         AppRoutingModule,
         NativeScriptModule,
+
+        /*
+         * Habilita HttpClient a nivel global.
+         *
+         * Es necesario para los servicios que
+         * consumen el WebService de MineControl.
+         */
+        NativeScriptHttpClientModule,
+
         NativeScriptUISideDrawerModule,
 
         /*

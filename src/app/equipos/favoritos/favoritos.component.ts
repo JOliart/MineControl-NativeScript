@@ -1,6 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { RouterExtensions } from "nativescript-angular/router";
 import * as Toast from "nativescript-toast";
+import * as SocialShare from "nativescript-social-share";
+import { ImageSource } from "tns-core-modules/image-source";
 
 import { Store } from "@ngrx/store";
 
@@ -156,8 +158,31 @@ export class FavoritosComponent implements OnInit {
         ).show();
     }
 
+    /*
+     * Comparte una imagen desde un componente diferente
+     * al utilizado para compartir texto.
+     */
+    public compartirImagen(): void {
+
+        const imagen = ImageSource.fromFileSync(
+            "~/images/minecontrol-local.png"
+        );
+
+        if (!imagen) {
+            Toast.makeText(
+                "No se pudo cargar la imagen"
+            ).show();
+            return;
+        }
+
+        SocialShare.shareImage(
+            imagen,
+            "MineControl - Gestion de equipos"
+        );
+    }
     public volver(): void {
 
         this.routerExtensions.back();
     }
 }
+

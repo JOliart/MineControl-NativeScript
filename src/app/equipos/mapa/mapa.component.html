@@ -1,0 +1,34 @@
+<ActionBar class="action-bar">
+    <Label
+        class="action-bar-title"
+        text="Mapa MineControl">
+    </Label>
+</ActionBar>
+
+<GridLayout rows="auto, *">
+
+    <StackLayout
+        row="0"
+        class="encabezado">
+
+        <Label
+            class="titulo"
+            text="Ubicacion de equipos">
+        </Label>
+
+        <Label
+            class="descripcion"
+            text="Google Maps integrado con NativeScript">
+        </Label>
+
+    </StackLayout>
+
+    <MapView
+        row="1"
+        latitude="-7.1638"
+        longitude="-78.5003"
+        zoom="13"
+        (mapReady)="onMapReady($event)">
+    </MapView>
+
+</GridLayout>

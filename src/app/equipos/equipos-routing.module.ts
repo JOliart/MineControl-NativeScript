@@ -6,6 +6,7 @@ import { ListaComponent } from "./lista/lista.component";
 import { DetalleComponent } from "./detalle/detalle.component";
 import { EditarComponent } from "./editar/editar.component";
 import { FavoritosComponent } from "./favoritos/favoritos.component";
+import { MapaComponent } from "./mapa/mapa.component";
 
 const routes: Routes = [
     {
@@ -15,6 +16,10 @@ const routes: Routes = [
     {
         path: "favoritos",
         component: FavoritosComponent
+    },
+    {
+        path: "mapa",
+        component: MapaComponent
     },
     {
         path: "detalle/:id",

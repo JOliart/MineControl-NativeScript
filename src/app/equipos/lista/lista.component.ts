@@ -4,8 +4,14 @@ import { isAndroid } from "tns-core-modules/platform";
 import { action } from "tns-core-modules/ui/dialogs";
 import * as Toast from "nativescript-toast";
 
-import { Equipo, EquiposService } from "../equipos.service";
-import { FavoritosService } from "../favoritos.service";
+import {
+    Equipo,
+    EquiposService
+} from "../equipos.service";
+
+import {
+    FavoritosService
+} from "../favoritos.service";
 
 @Component({
     selector: "EquiposLista",
@@ -17,6 +23,7 @@ export class ListaComponent implements OnInit {
 
     public equipos: Equipo[] = [];
     public resultadosBusqueda: Equipo[] = [];
+
     public textoBusqueda = "";
     public plataforma = "iOS";
     public cargando = false;
@@ -29,19 +36,25 @@ export class ListaComponent implements OnInit {
 
     public ngOnInit(): void {
 
-        // Codigo especifico para Android.
+        /*
+         * Detecta la plataforma actual.
+         */
         if (isAndroid) {
             this.plataforma = "Android";
         }
 
         /*
-         * Carga inicial asincronica desde el WebService.
+         * Carga inicial de equipos desde
+         * MineControl API.
          */
         this.cargarEquipos();
     }
 
     /*
-     * Consume el WebService mediante un Observable.
+     * Obtiene los equipos desde el WebService.
+     *
+     * Puede recibir opcionalmente un filtro
+     * para realizar una busqueda.
      */
     public cargarEquipos(filtro?: string): void {
 
@@ -53,7 +66,9 @@ export class ListaComponent implements OnInit {
                 (datos: Equipo[]) => {
 
                     this.equipos = datos;
-                    this.resultadosBusqueda = datos.slice();
+
+                    this.resultadosBusqueda =
+                        datos.slice();
 
                     this.cargando = false;
                 },
@@ -75,17 +90,18 @@ export class ListaComponent implements OnInit {
     }
 
     /*
-     * Busqueda mediante querystring.
-     *
-     * Ejemplo:
-     * /equipos?buscar=bomba
+     * Realiza la busqueda utilizando
+     * el WebService.
      */
     public buscar(): void {
 
-        const texto = this.textoBusqueda.trim();
+        const texto =
+            this.textoBusqueda.trim();
 
         if (!texto) {
+
             this.cargarEquipos();
+
             return;
         }
 
@@ -95,7 +111,9 @@ export class ListaComponent implements OnInit {
                 (datos: Equipo[]) => {
 
                     this.equipos = datos;
-                    this.resultadosBusqueda = datos.slice();
+
+                    this.resultadosBusqueda =
+                        datos.slice();
 
                     Toast.makeText(
                         "Resultados recibidos del WebService"
@@ -116,6 +134,10 @@ export class ListaComponent implements OnInit {
             );
     }
 
+    /*
+     * Limpia el campo de busqueda y
+     * vuelve a cargar todos los equipos.
+     */
     public limpiarBusqueda(): void {
 
         this.textoBusqueda = "";
@@ -128,10 +150,8 @@ export class ListaComponent implements OnInit {
     }
 
     /*
-     * Guarda el equipo seleccionado como favorito.
-     *
-     * El servicio utiliza SQLite y almacena
-     * los datos en la tabla favoritos.
+     * Guarda el equipo seleccionado
+     * dentro de favoritos.
      */
     public agregarFavorito(
         equipo: Equipo
@@ -145,6 +165,7 @@ export class ListaComponent implements OnInit {
                     "Favorito agregado: " +
                     equipo.nombre
                 ).show();
+
             })
             .catch((error: any) => {
 
@@ -161,8 +182,8 @@ export class ListaComponent implements OnInit {
     }
 
     /*
-     * Dialogo Action.
-     * Modifica el estado del objeto seleccionado.
+     * Permite cambiar localmente
+     * el estado de un equipo.
      */
     public cambiarEstado(
         equipo: Equipo
@@ -181,7 +202,8 @@ export class ListaComponent implements OnInit {
                 equipo.codigo,
             cancelButtonText: "Cancelar",
             actions: opciones
-        }).then((resultado: string) => {
+        })
+        .then((resultado: string) => {
 
             if (
                 resultado &&
@@ -201,11 +223,14 @@ export class ListaComponent implements OnInit {
 
     /*
      * Pull To Refresh.
-     * Obtiene nuevamente los datos del WebService.
+     *
+     * Vuelve a consultar el WebService
+     * y actualiza la lista.
      */
     public refrescar(args: any): void {
 
-        const pullRefresh = args.object;
+        const pullRefresh =
+            args.object;
 
         this.equiposService
             .getEquipos()
@@ -213,6 +238,7 @@ export class ListaComponent implements OnInit {
                 (datos: Equipo[]) => {
 
                     this.equipos = datos;
+
                     this.resultadosBusqueda =
                         datos.slice();
 
@@ -246,7 +272,8 @@ export class ListaComponent implements OnInit {
     }
 
     /*
-     * Navegacion programatica al detalle.
+     * Navega hacia el detalle
+     * del equipo seleccionado.
      */
     public verDetalle(
         equipo: Equipo
@@ -266,18 +293,63 @@ export class ListaComponent implements OnInit {
     }
 
     /*
-     * Abre la futura pantalla que mostrara
-     * los registros almacenados en SQLite.
+     * Navega hacia la pantalla
+     * de favoritos.
      */
     public verFavoritos(): void {
 
         this.routerExtensions.navigate(
-            ["/equipos/favoritos"],
+            [
+                "/equipos/favoritos"
+            ],
             {
                 transition: {
                     name: "slideLeft"
                 }
             }
         );
+    }
+
+    /*
+     * PRACTICA GOOGLE MAPS
+     *
+     * Navega hacia MapaComponent.
+     *
+     * Los mensajes de consola permiten
+     * comprobar si el evento TAP funciona
+     * y si Angular completa la navegacion.
+     */
+    public verMapa(): void {
+
+        console.log(
+            "BOTON VER MAPA PRESIONADO"
+        );
+
+        this.routerExtensions
+            .navigate(
+                [
+                    "/equipos/mapa"
+                ],
+                {
+                    transition: {
+                        name: "slideLeft"
+                    }
+                }
+            )
+            .then(() => {
+
+                console.log(
+                    "NAVEGACION AL MAPA CORRECTA"
+                );
+
+            })
+            .catch((error: any) => {
+
+                console.log(
+                    "ERROR AL NAVEGAR AL MAPA:"
+                );
+
+                console.log(error);
+            });
     }
 }
